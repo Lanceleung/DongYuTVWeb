@@ -127,7 +127,8 @@
     },
     {
       "id": "jiangxi",
-      "name": "simple",
+      "name": "base",
+      "url": "https://www.jxntv.cn/live/#/{{id}}",
       "script": {
         "init": [
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/jiangxi/init.js"
@@ -170,6 +171,18 @@
         ],
         "play": [
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/anhui/play.js"
+        ]
+      }
+    },
+    {
+      "id": "shanxi",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanxi/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanxi/play.js"
         ]
       }
     }
@@ -982,13 +995,13 @@
     {
       "channelType": "江西",
       "player": "jiangxi",
-      "hidden": true,
+      "hidden": false,
       "channelList": [
         {
           "tvLogo": "",
           "channelName": "江西卫视",
           "args": {
-            "m3u8Name": "tv_jxtv1.m3u8"
+            "id": "jxtv1"
           },
           "number": 98
         },
@@ -996,7 +1009,7 @@
           "tvLogo": "",
           "channelName": "都市频道",
           "args": {
-            "m3u8Name": "tv_jxtv2.m3u8"
+            "id": "jxtv2"
           },
           "number": 99
         },
@@ -1004,7 +1017,7 @@
           "tvLogo": "",
           "channelName": "经济生活频道",
           "args": {
-            "m3u8Name": "tv_jxtv3.m3u8"
+            "id": "jxtv3"
           },
           "number": 100
         },
@@ -1012,7 +1025,7 @@
           "tvLogo": "",
           "channelName": "公共·农业频道",
           "args": {
-            "m3u8Name": "tv_jxtv5.m3u8"
+            "id": "jxtv5"
           },
           "number": 101
         },
@@ -1020,7 +1033,7 @@
           "tvLogo": "",
           "channelName": "少儿频道",
           "args": {
-            "m3u8Name": "tv_jxtv6.m3u8"
+            "id": "jxtv6"
           },
           "number": 102
         },
@@ -1028,7 +1041,7 @@
           "tvLogo": "",
           "channelName": "新闻频道",
           "args": {
-            "m3u8Name": "tv_jxtv7.m3u8"
+            "id": "jxtv7"
           },
           "number": 103
         },
@@ -1036,7 +1049,7 @@
           "tvLogo": "",
           "channelName": "移动电视频道",
           "args": {
-            "m3u8Name": "tv_jxtv8.m3u8"
+            "id": "jxtv8"
           },
           "number": 104
         }
@@ -1361,6 +1374,27 @@
           "args": {
             "id": "99"
           }
+        }
+      ]
+    },
+    {
+      "channelType": "山西",
+      "player": "shanxi",
+      "channelList": [
+        {
+          "channelName": "山西卫视"
+        },
+        {
+          "channelName": "黄河电视台"
+        },
+        {
+          "channelName": "山西影视"
+        },
+        {
+          "channelName": "山西社会与法制"
+        },
+        {
+          "channelName": "山西经济与科技"
         }
       ]
     },

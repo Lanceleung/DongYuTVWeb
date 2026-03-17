@@ -61,6 +61,16 @@ class SPKeyConstants {
      * Cookie
      */
     const val COOKIE = "user_cookie"
+
+    /**
+     * 直播源
+     */
+    const val LIVE_CHANNEL = "live_channel"
+
+    /**
+     * CCTV源
+     */
+    const val CCTV_CHANNEL = "cctv_channel"
   }
 
 }

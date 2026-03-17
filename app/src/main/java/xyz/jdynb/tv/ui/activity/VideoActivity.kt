@@ -20,8 +20,11 @@ import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerControlView
 import androidx.media3.ui.PlayerView
 import androidx.recyclerview.widget.RecyclerView
@@ -261,8 +264,8 @@ class VideoActivity : EngineActivity<ActivityVideoBinding>(R.layout.activity_vid
   private fun createVideoPlayer() {
     // 1. 创建 HTTP 数据源工厂，配置连接参数
     val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
-      setConnectTimeoutMs(5000) // 连接超时 5 秒
-      setReadTimeoutMs(8000)    // 读取超时 8 秒
+      setConnectTimeoutMs(15000) // 连接超时 15 秒
+      setReadTimeoutMs(15000)    // 读取超时 15 秒
       setKeepPostFor302Redirects(true)  // 保持 POST 请求重定向
       setAllowCrossProtocolRedirects(true) // 允许跨协议重定向
     }
@@ -283,7 +286,16 @@ class VideoActivity : EngineActivity<ActivityVideoBinding>(R.layout.activity_vid
     val hlsMediaSourceFactory = HlsMediaSource.Factory(resolvingDataSourceFactory)
 
     // 5. 构建优化的 ExoPlayer，配置播放参数
-    player = ExoPlayer.Builder(this, hlsMediaSourceFactory)
+    player = ExoPlayer.Builder(this)
+      .setMediaSourceFactory(hlsMediaSourceFactory)
+      .setRenderersFactory(DefaultRenderersFactory(this).setEnableDecoderFallback(true))
+      .setLoadControl(
+        DefaultLoadControl.Builder()
+          .setBufferDurationsMs(5000, 30000, 700, 2000)
+          .setTargetBufferBytes(DefaultLoadControl.DEFAULT_TARGET_BUFFER_BYTES)  // 使用默认值
+          .setPrioritizeTimeOverSizeThresholds(true)  // 优先时间，适合流媒体
+          .build()
+      )
       .setSeekBackIncrementMs(10 * 1000L)  // 快退 10 秒
       .setSeekForwardIncrementMs(10 * 1000L) // 快进 10 秒
       .setHandleAudioBecomingNoisy(true) // 处理音频中断（耳机拔出等）
@@ -323,6 +335,9 @@ class VideoActivity : EngineActivity<ActivityVideoBinding>(R.layout.activity_vid
   }
 
   private fun saveProgress() {
+    if (!::currentVideoProgressFile.isInitialized) {
+      return
+    }
     try {
       currentVideoProgressFile.writeText(NetworkUtils.json.encodeToString(videoProgressModel))
     } catch (e: IOException) {

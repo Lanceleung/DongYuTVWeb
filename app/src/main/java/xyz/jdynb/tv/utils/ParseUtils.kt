@@ -1,5 +1,8 @@
 package xyz.jdynb.tv.utils
 
+import android.util.Log
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -15,10 +18,20 @@ import java.net.URLEncoder
 
 object ParseUtils {
 
+  @OptIn(ExperimentalSerializationApi::class)
+  private val json = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+    encodeDefaults = true
+    allowComments = true
+    explicitNulls = false
+  }
+
   /**
    * 获取解析规则
    */
-  fun getParseRule(videoUrl: String) = NetworkUtils.requestSyncResult<ParseModel>(Api.GET_PARSE_RULE, mapOf("videoUrl" to videoUrl))
+  fun getParseRule(videoUrl: String) =
+    NetworkUtils.requestSyncResult<ParseModel>(Api.GET_PARSE_RULE, mapOf("videoUrl" to videoUrl))
 
   @Throws(Exception::class)
   fun parseVideo(url: String): String? {
@@ -48,9 +61,22 @@ object ParseUtils {
 
     decryptRule.removeStr.forEach { decrypt = decrypt.replace(it, "") }
 
+    // 移除 BOM 头
+    decrypt = decrypt.replace("\uFEFF", "")
+      // 移除零宽空格和零宽连接符
+      .replace("[\\u200B-\\u200D\\uFEFF]".toRegex(), "")
+      // 只保留有效的 JSON 字符
+      .filter { it.isDefined() && it.code >= 32 }
+      .trim()
+    Log.i("ParseUtils", "decrypt: $decrypt")
+
     val decryptJsonElement = NetworkUtils.json.parseToJsonElement(decrypt)
 
-    return decryptJsonElement.jsonObject[decryptRule.videoUrl]?.jsonPrimitive?.contentOrNull
+    val videoUrl = decryptJsonElement.jsonObject[decryptRule.videoUrl]?.jsonPrimitive?.contentOrNull
+
+    Log.i("ParseUtils", "videoUrl: $videoUrl")
+
+    return videoUrl
   }
 
   fun parseVideoLocal(url: String): String? {
@@ -80,6 +106,13 @@ object ParseUtils {
       // Log.i(TAG, "decrypt: $decrypt")
       val json = decrypt.replace("tg:@xmflv", "")
         .replace("\u0003\u0003\u0003", "")
+        // 移除 BOM 头
+        .replace("\uFEFF", "")
+        // 移除零宽空格和零宽连接符
+        .replace("[\\u200B-\\u200D\\uFEFF]".toRegex(), "")
+        // 只保留有效的 JSON 字符
+        .filter { it.isDefined() && it.code >= 32 }
+        .trim()
       // Log.i(TAG, "json: $json")
       val jsonObject = JSONObject(json)
       return jsonObject.getString("url")

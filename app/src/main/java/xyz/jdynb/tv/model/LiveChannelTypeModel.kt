@@ -21,7 +21,7 @@ data class LiveChannelTypeModel(
   /**
    * 是否隐藏
    */
-  val hidden: Boolean = false,
+  var hidden: Boolean = false,
   /**
    * 分类下频道列表
    */

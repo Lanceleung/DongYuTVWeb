@@ -28,6 +28,8 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 object NetworkUtils {
 
@@ -48,8 +50,10 @@ object NetworkUtils {
     .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
     .cookieJar(persistentCookieJar)
     .addInterceptor { chan ->
+      val num = Random.nextInt(100, 180)
+      val num2 = Random.nextInt(7, 11)
       val request = chan.request().newBuilder()
-        .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36")
+        .addHeader("User-Agent", "Mozilla/5.0 (Windows NT ${num2}.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${num}.0.0.0 Safari/537.36")
         .addHeader("Accept", "*/*")
         .addHeader("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
         .build()

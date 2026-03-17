@@ -17,6 +17,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:layout_marginBottom="6dp"
+                    android:text="方向键选择，确认键按下(修改)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
                 <Button
                     android:clickable="true"
                     android:focusable="true"
@@ -24,12 +30,12 @@
                     android:id="@+id/btn_back"
                     android:textSize="19sp"
                     android:background="@drawable/bg_select"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:textColor="@color/white"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="10dp"
                     android:focusable="true"
                     android:padding="10dp"
                     android:background="@drawable/bg_select"
@@ -37,7 +43,7 @@
                     android:id="@+id/sw_reverse_direction"
                     android:text="反转方向键"
                     android:textSize="19sp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -50,7 +56,7 @@
                     android:id="@+id/sw_boot"
                     android:textSize="19sp"
                     android:text="开机自启动"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -63,7 +69,20 @@
                     android:id="@+id/sw_home"
                     android:textSize="19sp"
                     android:text="主页默认搜索页"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:textColor="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_select"
+                    tools:checked="true"
+                    android:id="@+id/sw_cctv"
+                    android:text="使用CCTV源"
+                    android:textSize="19sp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <Button
@@ -74,7 +93,7 @@
                     android:id="@+id/btn_check_update"
                     android:textSize="19sp"
                     android:background="@drawable/bg_select"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <Button
@@ -85,7 +104,7 @@
                     android:id="@+id/btn_donate"
                     android:textSize="19sp"
                     android:background="@drawable/bg_select"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <Button
@@ -96,7 +115,7 @@
                     android:id="@+id/btn_feedback"
                     android:textSize="19sp"
                     android:background="@drawable/bg_select"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>

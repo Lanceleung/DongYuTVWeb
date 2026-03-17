@@ -33,7 +33,7 @@ object UpdateUtils {
    *
    * @param context 上下文
    */
-  suspend fun checkUpdate(context: Context) {
+  suspend fun checkUpdate(context: Context, showToast: Boolean = true) {
     try {
       val updateModel = withContext(Dispatchers.IO) {
         NetworkUtils.requestSuspend<UpdateModel>(Api.CHECK_UPDATE, mapOf("versionCode" to AppUtils.getAppVersionCode().toString()))
@@ -46,12 +46,15 @@ object UpdateUtils {
         show()
       }
     } catch (e: Exception) {
+      Log.e(TAG, "检查更新异常: $e")
+      if (!showToast) {
+        return
+      }
       if (e is ResultDataNullException) {
         Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
       } else {
         Toast.makeText(context, "检查更新异常", Toast.LENGTH_SHORT).show()
       }
-      Log.e(TAG, "检查更新异常: $e")
     }
   }
 

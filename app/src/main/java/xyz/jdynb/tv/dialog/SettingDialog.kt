@@ -65,7 +65,7 @@ class SettingDialog(context: Context) :
 
     binding.btnDonate.setOnClickListener {
       val imageView = ImageView(context).apply {
-        layoutParams = ViewGroup.LayoutParams(400, 400)
+        layoutParams = ViewGroup.LayoutParams(500, 500)
       }
       val inputStream = context.assets.open("images/qrcode.png")
       val readBytes = inputStream.readBytes()
@@ -80,7 +80,7 @@ class SettingDialog(context: Context) :
     binding.btnFeedback.setOnClickListener {
       Toast.makeText(context, "请扫码关注公众号", Toast.LENGTH_SHORT).show()
       val imageView = ImageView(context).apply {
-        layoutParams = ViewGroup.LayoutParams(400, 400)
+        layoutParams = ViewGroup.LayoutParams(500, 500)
       }
       val inputStream = context.assets.open("images/qrcode_mp.jpg")
       val readBytes = inputStream.readBytes()
@@ -90,6 +90,12 @@ class SettingDialog(context: Context) :
       AlertDialog.Builder(context)
         .setView(imageView)
         .show()
+    }
+
+    binding.swCctv.isChecked = SPKeyConstants.CCTV_CHANNEL.getRequired<Boolean>(false)
+    binding.swCctv.setOnCheckedChangeListener { buttonView, isChecked ->
+      SPKeyConstants.CCTV_CHANNEL.put(isChecked)
+      Toast.makeText(context, "需要重启软件才能生效", Toast.LENGTH_LONG).show()
     }
   }
 

@@ -21,7 +21,7 @@ localbroadcastmanager = "1.0.0"
 tbssdk = "44286"
 webx5core_arm64_v8a = "1.0.2"
 glide = "4.12.0"
-media3 = "1.6.0"
+media3 = "1.7.0"
 okhttp = "4.9.1"
 
 [libraries]

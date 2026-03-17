@@ -198,7 +198,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     val target = fragmentClazz.getDeclaredConstructor().newInstance()
     livePlayerFragment = target
     transaction.replace(R.id.fragment, target, tag)
-    transaction.commitNow()
+    transaction.commitAllowingStateLoss()
   }
 
   /**

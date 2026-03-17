@@ -31,6 +31,7 @@ import xyz.jdynb.tv.databinding.ActivitySearchBinding
 import xyz.jdynb.tv.dialog.SettingDialog
 import xyz.jdynb.tv.dialog.UserAuthDialog
 import xyz.jdynb.tv.utils.NetworkUtils
+import xyz.jdynb.tv.utils.UpdateUtils
 
 class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_search) {
 
@@ -43,6 +44,10 @@ class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_s
   override fun initData() {
     lifecycleScope.launch {
       NetworkUtils.requestSuspendResult<Unit>("/user/checkLogin")
+    }
+
+    lifecycleScope.launch {
+      UpdateUtils.checkUpdate(this@SearchActivity, false)
     }
   }
 

@@ -1,5 +1,6 @@
 package xyz.jdynb.tv
 
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -136,6 +137,7 @@ class MainViewModel : ViewModel() {
     }
     // 发生错误时
     .catch {
+      Log.e(TAG, "获取频道信息失败: ", it)
       // 播放默认的频道
       emit(getDefaultChannelModel())
     }
@@ -153,6 +155,13 @@ class MainViewModel : ViewModel() {
     val liveContent = NetworkUtils.getResponseBodyCache(LIVE_CONFIG_URL, "live-3.jsonc")
     // 反序列化赋值给 liveModel 对象
     _liveModel = json.decodeFromString<LiveModel>(liveContent)
+    val showCCTV = SPKeyConstants.CCTV_CHANNEL.getRequired<Boolean>(false)
+    liveModel.channel.find { it.player == "cctv" }?.hidden = !showCCTV
+    liveModel.channel.forEach {
+      if (it.player == "ysp") {
+        it.hidden = showCCTV
+      }
+    }
     // 频道类型列表
     _channelTypeModelList.value =
       liveModel.channel.filter {
