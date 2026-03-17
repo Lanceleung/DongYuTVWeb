@@ -1399,6 +1399,84 @@
       ]
     },
     {
+      "channelType": "黑龙江",
+      "player": "common",
+      "channelList": [
+        {
+          "channelName": "黑龙江卫视",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljws_own.m3u8"
+          }
+        },
+        {
+          "channelName": "都市频道",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/dushi_hd.m3u8"
+          }
+        },
+        {
+          "channelName": "影视频道",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljys_hd.m3u8"
+          }
+        },
+        {
+          "channelName": "文体频道",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljwy_hd.m3u8"
+          }
+        },
+        {
+          "channelName": "农业科教",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljgg_hd.m3u8"
+          }
+        },
+        {
+          "channelName": "新闻法治",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljxw_hd.m3u8"
+          }
+        },
+        {
+          "channelName": "少儿频道",
+          "args": {
+            "liveUrl": "https://idclive.hljtv.com:4430/live/hljse_hd.m3u8"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "陕西",
+      "player": "common",
+      "channelList": [
+        {
+          "channelName": "陕西卫视",
+          "args": {
+            "liveUrl": "http://stream.snrtv.com/sxbc-star-gwHKQ9.m3u8"
+          }
+        },
+        {
+          "channelName": "新闻资讯",
+          "args": {
+            "liveUrl": "http://stream.snrtv.com/sxbc-1-aqAEHS.m3u8"
+          }
+        },
+        {
+          "channelName": "都市青春",
+          "args": {
+            "liveUrl": "http://stream.snrtv.com/sxbc-2-qstFJ1.m3u8"
+          }
+        },
+        {
+          "channelName": "移动电视",
+          "args": {
+            "liveUrl": "http://stream.snrtv.com/sxbc-yd-vBMTY4.m3u8"
+          }
+        }
+      ]
+    },
+    {
       "channelType": "香港",
       "player": "common",
       "channelList": [

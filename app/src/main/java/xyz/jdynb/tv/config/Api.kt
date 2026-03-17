@@ -4,7 +4,7 @@ import xyz.jdynb.tv.BuildConfig
 
 object Api {
 
-  val BASE_URL: String = if (!BuildConfig.DEBUG) {
+  val BASE_URL: String = if (/*!BuildConfig.DEBUG*/true) {
     // "http://tv.jdynb.xyz"
     "http://47.103.74.108:8005"
   } else {

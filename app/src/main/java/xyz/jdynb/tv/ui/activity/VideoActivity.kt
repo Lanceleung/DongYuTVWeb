@@ -146,10 +146,7 @@ class VideoActivity : EngineActivity<ActivityVideoBinding>(R.layout.activity_vid
         movieModel.url?.let { originalUrl ->
           // 如果有 URL，创建媒体源（ResolvingDataSource 会自动解析）
           val mediaItem = MediaItem.fromUri(originalUrl)
-          player.setMediaItem(mediaItem)
-          if (videoProgressModel.currentProgress > 0) {
-            player.seekTo(videoProgressModel.currentProgress)
-          }
+          player.setMediaItem(mediaItem, videoProgressModel.currentProgress)
           player.prepare()
         }
         title.text = movieModel.title
