@@ -23,10 +23,12 @@ import com.drake.brv.utils.setup
 import com.drake.engine.base.EngineActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import xyz.jdynb.music.utils.SpUtils.getRequired
 import xyz.jdynb.tv.MainActivity
 import xyz.jdynb.tv.R
 import xyz.jdynb.tv.config.Api
 import xyz.jdynb.tv.constants.IntentActionConstants
+import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivitySearchBinding
 import xyz.jdynb.tv.dialog.SettingDialog
 import xyz.jdynb.tv.dialog.UserAuthDialog
@@ -39,15 +41,17 @@ class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_s
 
   private val userAuthBroadcastReceiver = UserAuthBroadcastReceiver()
 
-  private var userAuthDialog: UserAuthDialog? = null // Initialize the dialog but keep it nullable
+  private var userAuthDialog: UserAuthDialog? = null
 
   override fun initData() {
     lifecycleScope.launch {
       NetworkUtils.requestSuspendResult<Unit>("/user/checkLogin")
     }
 
-    lifecycleScope.launch {
-      UpdateUtils.checkUpdate(this@SearchActivity, false)
+    if (SPKeyConstants.CHECK_UPDATE.getRequired<Boolean>(true)) {
+      lifecycleScope.launch {
+        UpdateUtils.checkUpdate(this@SearchActivity, false)
+      }
     }
   }
 
@@ -61,7 +65,10 @@ class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_s
     searchJob?.cancel(null)
     searchJob = lifecycleScope.launch {
       binding.rv.models =
-        NetworkUtils.requestSuspendResult<List<String>>(Api.SEARCH_SUGGEST, mapOf("keyword" to keyword))
+        NetworkUtils.requestSuspendResult<List<String>>(
+          Api.SEARCH_SUGGEST,
+          mapOf("keyword" to keyword)
+        )
           .onFailure {
             binding.state.showError(it)
             Log.e("SearchActivity", "Error fetching search suggestions", it)
@@ -121,7 +128,12 @@ class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_s
 
     val intent = IntentFilter(IntentActionConstants.AUTHORIZED)
     intent.addAction(IntentActionConstants.UN_AUTHORIZED)
-    registerReceiver(userAuthBroadcastReceiver, intent)
+    ContextCompat.registerReceiver(
+      this,
+      userAuthBroadcastReceiver,
+      intent,
+      ContextCompat.RECEIVER_EXPORTED
+    )
   }
 
   private fun createTextView(char: Char): TextView {

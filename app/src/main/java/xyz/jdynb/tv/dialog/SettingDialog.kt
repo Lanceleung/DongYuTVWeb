@@ -1,11 +1,13 @@
 package xyz.jdynb.tv.dialog
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SwitchCompat
 import com.bumptech.glide.Glide
 import com.drake.engine.base.EngineDialog
 import com.drake.engine.utils.NetworkUtils
@@ -38,22 +40,16 @@ class SettingDialog(context: Context) :
 
     binding.btnBack.requestFocus()
 
-    binding.swReverseDirection.isChecked = SPKeyConstants.REVERSE_DIRECTION.getRequired(false)
-    binding.swBoot.isChecked = SPKeyConstants.BOOT_AUTO_START.getRequired(true)
-    binding.swHome.isChecked = SPKeyConstants.HOME_DEFAULT_SEARCH.getRequired(false)
-
-    binding.swBoot.setOnCheckedChangeListener { buttonView, isChecked ->
-      SPKeyConstants.BOOT_AUTO_START.put(isChecked)
-    }
-
-    binding.swReverseDirection.setOnCheckedChangeListener { buttonView, isChecked ->
-      SPKeyConstants.REVERSE_DIRECTION.put(isChecked)
-    }
-
-    binding.swHome.setOnCheckedChangeListener { buttonView, isChecked ->
-      SPKeyConstants.HOME_DEFAULT_SEARCH.put(isChecked)
+    binding.swBoot.initSwitch(SPKeyConstants.BOOT_AUTO_START, true)
+    binding.swReverseDirection.initSwitch(SPKeyConstants.REVERSE_DIRECTION, false)
+    binding.swHome.initSwitch(SPKeyConstants.HOME_DEFAULT_SEARCH, false) {
       Toast.makeText(context, "下次启动时生效", Toast.LENGTH_SHORT).show()
     }
+    binding.swCctv.initSwitch(SPKeyConstants.CCTV_CHANNEL, false) {
+      Toast.makeText(context, "需要重启软件才能生效", Toast.LENGTH_LONG).show()
+    }
+    binding.swUpdate.initSwitch(SPKeyConstants.CHECK_UPDATE, true)
+    binding.swOkChannel.initSwitch(SPKeyConstants.OK_CHANNEL, false)
 
     binding.tvIp.text = NetworkUtils.getIPAddress(true)
 
@@ -64,38 +60,35 @@ class SettingDialog(context: Context) :
     }
 
     binding.btnDonate.setOnClickListener {
-      val imageView = ImageView(context).apply {
-        layoutParams = ViewGroup.LayoutParams(500, 500)
-      }
-      val inputStream = context.assets.open("images/qrcode.png")
-      val readBytes = inputStream.readBytes()
-      Glide.with(context)
-        .load(readBytes)
-        .into(imageView)
-      AlertDialog.Builder(context)
-        .setView(imageView)
-        .show()
+      showImageDialog("images/qrcode.png")
     }
 
     binding.btnFeedback.setOnClickListener {
       Toast.makeText(context, "请扫码关注公众号", Toast.LENGTH_SHORT).show()
-      val imageView = ImageView(context).apply {
-        layoutParams = ViewGroup.LayoutParams(500, 500)
-      }
-      val inputStream = context.assets.open("images/qrcode_mp.jpg")
-      val readBytes = inputStream.readBytes()
-      Glide.with(context)
-        .load(readBytes)
-        .into(imageView)
-      AlertDialog.Builder(context)
-        .setView(imageView)
-        .show()
+      showImageDialog("images/qrcode_mp.jpg")
     }
+  }
 
-    binding.swCctv.isChecked = SPKeyConstants.CCTV_CHANNEL.getRequired<Boolean>(false)
-    binding.swCctv.setOnCheckedChangeListener { buttonView, isChecked ->
-      SPKeyConstants.CCTV_CHANNEL.put(isChecked)
-      Toast.makeText(context, "需要重启软件才能生效", Toast.LENGTH_LONG).show()
+  private fun showImageDialog(path: String) {
+    val imageView = ImageView(context).apply {
+      layoutParams = ViewGroup.LayoutParams(500, 500)
+    }
+    val inputStream = context.assets.open(path)
+    val readBytes = inputStream.readBytes()
+    Glide.with(context)
+      .load(readBytes)
+      .into(imageView)
+    Dialog(context).apply {
+      setContentView(imageView)
+      show()
+    }
+  }
+
+  private fun SwitchCompat.initSwitch(key: String, default: Boolean, listener: ((Boolean) -> Unit)? = null) {
+    isChecked = key.getRequired<Boolean>(default)
+    setOnCheckedChangeListener { _, isChecked ->
+      key.put(isChecked)
+      listener?.invoke(isChecked)
     }
   }
 

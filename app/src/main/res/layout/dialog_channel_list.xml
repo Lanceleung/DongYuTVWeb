@@ -97,7 +97,7 @@
 
         <TextView
             android:alpha="0.7"
-            android:text="获取最新更新访问: github.com/Yu2002s/DongYuTvWeb或gitee.com/jdy2002/DongYuTvWeb"
+            android:text="公众号: 冬日暖雨，QQ交流群：1038112042 点击设置检查更新"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

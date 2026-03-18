@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.drake.engine.base.EngineDialog
 import com.drake.engine.dialog.setMaxWidth
 import com.drake.engine.utils.AppUtils
@@ -141,6 +142,10 @@ class UpdateDialog(context: Context, private val updateModel: UpdateModel) :
     binding.btnCancel.setOnClickListener {
       dismiss()
     }
+
+    Glide.with(context)
+      .load("file:///android_asset/images/qrcode_mp.jpg")
+      .into(binding.ivQrcode)
   }
 
 }

@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import xyz.jdynb.tv.MainActivity
 import xyz.jdynb.tv.MainViewModel
 import xyz.jdynb.tv.R
 import xyz.jdynb.tv.databinding.FragmentLivePlayerBinding
@@ -115,12 +116,11 @@ abstract class LivePlayerFragment : Fragment(), Playable {
     playerName = LivePlayer.getLivePlayerForClass(this.javaClass).player
     val player = mainViewModel.currentChannelModel.value?.player
     if (player == null) {
-      CrashHandler.getInstance().addLog(
-        "########player is null########\n\ncurrentChannelModel: $currentChannelModel," +
-            " liveModel: ${mainViewModel.liveModel}"
-      )
-      // 尝试重启activity
-      activity?.recreate()
+      // 异常情况，目前未知，这里先尝试刷新操作
+      Handler(Looper.getMainLooper()).postDelayed({
+        (requireActivity() as MainActivity).refreshFragment()
+      }, 1500L)
+      return
     }
     playerConfig = mainViewModel.liveModel.player.find { it.id == player } ?: LiveModel.Player()
     Log.i(TAG, "playerConfig: $playerConfig")

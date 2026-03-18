@@ -9,6 +9,8 @@ import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
@@ -35,6 +37,7 @@ import com.drake.engine.utils.NetworkUtils
 import kotlinx.coroutines.delay
 import xyz.jdynb.music.utils.SpUtils.getRequired
 import xyz.jdynb.tv.constants.SPKeyConstants
+import xyz.jdynb.tv.dialog.SettingDialog
 import xyz.jdynb.tv.ui.activity.SearchActivity
 
 class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -116,6 +119,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
   /**
    * 注册网络状态广播接收器
    */
+  @Suppress("DEPRECATION")
   private fun registerNetworkReceiver() {
     val filter = IntentFilter().apply {
       addAction(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -129,7 +133,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
   private fun unregisterNetworkReceiver() {
     try {
       unregisterReceiver(networkReceiver)
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
       //接器未注册时会抛出异常，忽略
     }
   }
@@ -162,6 +166,10 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     }*/
   }
 
+  fun refreshFragment() {
+    handleChannelTypeChange()
+  }
+
   /**
    * 处理频道类型变化
    *
@@ -170,6 +178,14 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
   private fun handleChannelTypeChange(type: String = mainViewModel.currentChannelType.value) {
     // 如果当前频道类型为空，则不处理
     if (type.isEmpty()) return
+
+    if (mainViewModel.currentChannelModel.value == null) {
+      Handler(Looper.getMainLooper()).postDelayed({
+        refreshFragment()
+      }, 1500L)
+      return
+    }
+
     Log.i(TAG, "currentChannelType: $type")
     // 根据当前频道类型获取对应的 Fragment 类
     val fragmentClazz = mainViewModel
@@ -292,7 +308,11 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
       // ENTER、OK（确认）
       KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
         Log.d(TAG, "onKeyDown: Ok")
-        livePlayerFragment?.resumeOrPause()
+        if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(false)) {
+          binding.btnMenu.callOnClick()
+        } else {
+          livePlayerFragment?.resumeOrPause()
+        }
       }
 
       // 静音
@@ -303,7 +323,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
             0,
             AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE
           )
-        } catch (_: SecurityException) {
+        } catch (_: Exception) {
         }
       }
 
@@ -315,7 +335,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
             AudioManager.ADJUST_LOWER,
             AudioManager.FLAG_SHOW_UI
           )
-        } catch (_: SecurityException) {
+        } catch (_: Exception) {
         }
       }
 
@@ -329,7 +349,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
               AudioManager.ADJUST_RAISE,
               AudioManager.FLAG_SHOW_UI
             )
-          } catch (e: SecurityException) {
+          } catch (e: Exception) {
             Log.e(TAG, e.message.toString())
           }
         }
@@ -353,7 +373,11 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
 
       // 菜单
       KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_P -> {
-        binding.btnMenu.callOnClick()
+        if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(false)) {
+          SettingDialog(this).show()
+        } else {
+          binding.btnMenu.callOnClick()
+        }
       }
 
       // 0
@@ -418,7 +442,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     unregisterNetworkReceiver()
   }
 
-  private inner class NetworkBoardReceiver: BroadcastReceiver() {
+  private inner class NetworkBoardReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
       Log.i(TAG, "network change")
       val currentNetworkConnected = NetworkUtils.isConnected()

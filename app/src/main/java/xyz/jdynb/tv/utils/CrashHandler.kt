@@ -81,7 +81,14 @@ class CrashHandler : Thread.UncaughtExceptionHandler {
     printWriter.close()
     val context = DongYuTVApplication.context
     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-    stringBuilder.append("\n当前软件版本：${packageInfo.versionName} ${PackageInfoCompat.getLongVersionCode(packageInfo)}\n")
+    stringBuilder.append(
+      "公众号：冬日暖雨\nQQ群：1038112042\nWebView: ${WebViewUpgrade.getCurrentLocalWebViewVersion()}\n" +
+          "当前软件版本：${packageInfo.versionName} ${
+            PackageInfoCompat.getLongVersionCode(
+              packageInfo
+            )
+          }\n"
+    )
     stringBuilder.append("SDK版本: " + Build.VERSION.SDK_INT)
     stringBuilder.append("\n手机系统：" + Build.VERSION.INCREMENTAL)
 

@@ -71,6 +71,16 @@ class SPKeyConstants {
      * CCTV源
      */
     const val CCTV_CHANNEL = "cctv_channel"
+
+    /**
+     * 是否检查更新
+     */
+    const val CHECK_UPDATE = "check_update"
+
+    /**
+     * OK换台
+     */
+    const val OK_CHANNEL = "ok_channel"
   }
 
 }

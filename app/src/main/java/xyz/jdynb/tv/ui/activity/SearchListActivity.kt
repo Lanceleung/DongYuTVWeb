@@ -32,7 +32,6 @@ class SearchListActivity :
           .putExtra(PARAM_KEYWORD, keyword)
       )
     }
-
   }
 
   override fun initData() {

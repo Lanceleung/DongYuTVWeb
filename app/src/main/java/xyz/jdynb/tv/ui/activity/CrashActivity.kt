@@ -20,6 +20,7 @@ import xyz.jdynb.tv.config.Api
 import xyz.jdynb.tv.databinding.ActivityCrashBinding
 import xyz.jdynb.tv.model.AppCrashLogModel
 import xyz.jdynb.tv.utils.NetworkUtils
+import xyz.jdynb.tv.utils.UpdateUtils
 
 /**
  * App全局闪退处理
@@ -52,11 +53,17 @@ class CrashActivity : EngineToolbarActivity<ActivityCrashBinding>(R.layout.activ
 
     binding.restartApp.requestFocus()
 
-    Toast.makeText(this, "3秒后自动重启", Toast.LENGTH_SHORT).show()
+    binding.checkUpdate.setOnClickListener {
+      lifecycleScope.launch {
+        UpdateUtils.checkUpdate(this@CrashActivity, true)
+      }
+    }
+
+    /*Toast.makeText(this, "30秒后自动重启", Toast.LENGTH_SHORT).show()
 
     Handler(Looper.getMainLooper()).postDelayed({
       binding.restartApp.callOnClick()
-    }, 3000L)
+    }, 30000L)*/
   }
 
   override fun initData() {

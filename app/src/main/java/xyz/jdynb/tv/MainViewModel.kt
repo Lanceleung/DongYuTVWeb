@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -238,7 +239,7 @@ class MainViewModel : ViewModel() {
    */
   val showCurrentChannel = _showCurrentChannel.asStateFlow()
 
-  private val _currentChannelType = MutableStateFlow<String>("")
+  private val _currentChannelType = MutableStateFlow("")
 
   /**
    * 当前频道渠道类型分组

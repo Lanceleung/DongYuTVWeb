@@ -85,6 +85,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
+                <androidx.appcompat.widget.SwitchCompat
+                    android:textColor="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_select"
+                    tools:checked="true"
+                    android:id="@+id/sw_ok_channel"
+                    android:text="按OK键换台"
+                    android:textSize="19sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:textColor="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_select"
+                    tools:checked="true"
+                    android:id="@+id/sw_update"
+                    android:text="自动检查更新"
+                    android:textSize="19sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
                 <Button
                     android:clickable="true"
                     android:focusable="true"
@@ -149,7 +175,7 @@
 
             <TextView
                 android:gravity="center_horizontal"
-                android:text="Gitee、Github: 搜索 DongYuTVWeb\nQQ交流反馈群: 1038112042"
+                android:text="Gitee、Github: 搜索 DongYuTVWeb\n公众号: 冬日暖雨\nQQ交流反馈群: 1038112042"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

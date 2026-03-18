@@ -38,12 +38,15 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
 
-            <!--<com.google.android.material.button.MaterialButton
+            <Button
+                android:focusable="true"
+                android:text="检查更新"
+                android:background="@drawable/bg_select"
                 android:layout_marginStart="10dp"
-                android:id="@+id/feedback"
+                android:id="@+id/check_update"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="wrap_content"/>-->
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
