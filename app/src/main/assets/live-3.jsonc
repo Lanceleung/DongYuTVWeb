@@ -204,6 +204,18 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hubei/init.js"
         ]
       }
+    },
+    {
+      "id": "hunan",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hunan/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hunan/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1507,6 +1519,7 @@
     {
       "channelType": "湖北",
       "player": "hubei",
+      "hidden": true,
       "channelList": [
         {
           "channelName": "湖北卫视",

@@ -203,10 +203,10 @@ async function getLiveUrl(id) {
       }
     };
 
-    const result = await fetch(`https://pwlp.bz.mgtv.com/v1/live/source?cameraId=287&activityId=&platform=4&appVersion=imgotv-pch5-1.1.0&clientKey=pcweb&auth_mode=1&local_definition=&init_definition=2&did=e19c3a7b-9e52-4f76-b79b-2c6f567b8400&uid=&token=&_t=${ts}&hdts=h265,h264&_support=10000000&sign=${sign}`, options)
+    const result = await fetch(`https://pwlp.bz.mgtv.com/v1/live/source?cameraId=${id}&activityId=&platform=4&appVersion=imgotv-pch5-1.1.0&clientKey=pcweb&auth_mode=1&local_definition=&init_definition=2&did=e19c3a7b-9e52-4f76-b79b-2c6f567b8400&uid=&token=&_t=${ts}&hdts=h265,h264&_support=10000000&sign=${sign}`, options)
       .then(response => response.json())
 
-    return result.data.url
+    return result.data.sources[0].url
 }
 
 ;(async function() {
