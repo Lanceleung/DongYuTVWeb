@@ -195,6 +195,15 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/chongqing/init.js"
         ]
       }
+    },
+    {
+      "id": "hubei",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hubei/init.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1492,6 +1501,108 @@
       "channelList": [
         {
           "channelName": "重庆卫视"
+        }
+      ]
+    },
+    {
+      "channelType": "湖北",
+      "player": "hubei",
+      "channelList": [
+        {
+          "channelName": "湖北卫视",
+          "args": {
+            "id": "431"
+          }
+        },
+        {
+          "channelName": "湖北经视",
+          "args": {
+            "id": "432"
+          }
+        },
+        {
+          "channelName": "湖北综合",
+          "args": {
+            "id": "433"
+          }
+        },
+        {
+          "channelName": "湖北影视",
+          "args": {
+            "id": "435"
+          }
+        },
+        {
+          "channelName": "湖北生活",
+          "args": {
+            "id": "436"
+          }
+        },
+        {
+          "channelName": "湖北教育",
+          "args": {
+            "id": "437"
+          }
+        },
+        {
+          "channelName": "湖北垄上",
+          "args": {
+            "id": "438"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "湖南",
+      "player": "hunan",
+      "channelList": [
+        {
+          "channelName": "湖南卫视",
+          "args": {
+            "id": "287"
+          }
+        },
+        {
+          "channelName": "金鹰卡通",
+          "args": {
+            "id": "267"
+          }
+        },
+        {
+          "channelName": "湖南经视",
+          "args": {
+            "id": "280"
+          }
+        },
+        {
+          "channelName": "湖南娱乐",
+          "args": {
+            "id": "344"
+          }
+        },
+        {
+          "channelName": "湖南电影",
+          "args": {
+            "id": "221"
+          }
+        },
+        {
+          "channelName": "湖南都市",
+          "args": {
+            "id": "346"
+          }
+        },
+        {
+          "channelName": "湖南电视剧",
+          "args": {
+            "id": "484"
+          }
+        },
+        {
+          "channelName": "湖南爱晚",
+          "args": {
+            "id": "261"
+          }
         }
       ]
     },

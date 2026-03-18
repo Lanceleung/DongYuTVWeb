@@ -154,6 +154,7 @@ class MainViewModel : ViewModel() {
   private suspend fun init() = withContext(Dispatchers.IO) {
     // 读取网络上的配置文件
     val liveContent = NetworkUtils.getResponseBodyCache(LIVE_CONFIG_URL, "live-3.jsonc")
+    Log.i(TAG, "liveContent: $liveContent")
     // 反序列化赋值给 liveModel 对象
     _liveModel = json.decodeFromString<LiveModel>(liveContent)
     val showCCTV = SPKeyConstants.CCTV_CHANNEL.getRequired<Boolean>(false)

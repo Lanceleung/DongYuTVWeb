@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.ConsoleMessage
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.SslErrorHandler
@@ -45,6 +46,9 @@ import xyz.jdynb.tv.utils.JsManager.execJs
 import xyz.jdynb.tv.utils.NetworkUtils.inputStream
 import xyz.jdynb.tv.utils.toArray
 import java.io.ByteArrayInputStream
+import java.net.CookieHandler
+import java.net.HttpURLConnection
+import java.net.URL
 
 abstract class LivePlayerFragment : Fragment(), Playable {
 
@@ -224,6 +228,8 @@ abstract class LivePlayerFragment : Fragment(), Playable {
    */
   @SuppressLint("SetJavaScriptEnabled")
   fun initWebView(webView: WebView) {
+    CookieManager.getInstance().setAcceptCookie(true)
+    CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
     webView.apply {
       // 基本配置
       setupWebSettings()
@@ -243,7 +249,7 @@ abstract class LivePlayerFragment : Fragment(), Playable {
 
       // tbs x5 播放视频优化
       // setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY)
-      setPluginState(WebSettings.PluginState.ON_DEMAND)
+      // setPluginState(WebSettings.PluginState.ON_DEMAND)
 
       isFocusable = false
 
@@ -331,7 +337,6 @@ abstract class LivePlayerFragment : Fragment(), Playable {
       // 通过后缀拦截
       return createEmptyResponse("*/*")
     }
-
     return null
   }
 
