@@ -1479,6 +1479,7 @@
     },
     {
       "channelType": "陕西",
+      "hidden": true,
       "player": "common",
       "channelList": [
         {
