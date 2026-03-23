@@ -3,6 +3,7 @@ package xyz.jdynb.tv.dialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
@@ -13,6 +14,8 @@ import com.drake.engine.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import xyz.jdynb.tv.MainActivity
+import xyz.jdynb.tv.MainViewModel
 import xyz.jdynb.tv.utils.SpUtils.getRequired
 import xyz.jdynb.tv.utils.SpUtils.put
 import xyz.jdynb.tv.R
@@ -20,7 +23,7 @@ import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.DialogSettingBinding
 import xyz.jdynb.tv.utils.UpdateUtils
 
-class SettingDialog(context: Context) :
+class SettingDialog(context: Context, private val mainViewModel: MainViewModel? = null) :
   EngineDialog<DialogSettingBinding>(context, R.style.Theme_BaseDialog) {
 
   private var serverThread: Thread? = null
@@ -126,6 +129,20 @@ class SettingDialog(context: Context) :
     } catch (e: Exception) {
       e.printStackTrace()
     }*/
+  }
+
+  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    if (event.keyCode == KeyEvent.KEYCODE_MENU || event.keyCode == KeyEvent.KEYCODE_P) {
+      dismiss()
+      val channelName = mainViewModel?.right()
+      if (channelName != null) {
+        Toast.makeText(context, "已切换到 $channelName", Toast.LENGTH_SHORT).show()
+      } else {
+        Toast.makeText(context, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+      }
+      return true
+    }
+    return super.dispatchKeyEvent(event)
   }
 
   override fun onDetachedFromWindow() {

@@ -33,6 +33,7 @@ import xyz.jdynb.tv.ui.fragment.LivePlayerFragment
 import kotlin.system.exitProcess
 import androidx.core.view.WindowInsetsControllerCompat
 import com.drake.engine.utils.NetworkUtils
+import kotlinx.coroutines.flow.MutableStateFlow
 import xyz.jdynb.tv.utils.SpUtils.getRequired
 import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.dialog.ChannelSourceDialog
@@ -84,6 +85,18 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
    *网络状态广播接收器
    */
   private val networkReceiver = NetworkBoardReceiver()
+
+  private val handler = Handler(Looper.getMainLooper())
+
+  private var lastMenuClickTime = 0L
+
+  private val menuClickRunnable = Runnable {
+    if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
+      SettingDialog(this, mainViewModel).show()
+    } else {
+      binding.btnMenu.callOnClick()
+    }
+  }
 
   override fun init() {
     super.init()
@@ -217,6 +230,10 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     }
   }
 
+  fun switchLiveSource() {
+    mainViewModel.right()
+  }
+
   /**
    * 显示指定的 Fragment
    *
@@ -326,12 +343,14 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
           if (moveX > SLIDE_DISTANCE) {
             // 右滑 - 左方向操作
             performSlideAnimation("right") {
-              mainViewModel.left()
+              val channelName = mainViewModel.left()
+              Toast.makeText(this, "已切换到: $channelName", Toast.LENGTH_SHORT).show()
             }
           } else if (moveX < -SLIDE_DISTANCE) {
             // 左滑 - 右方向操作
             performSlideAnimation("left") {
-              mainViewModel.right()
+              val channelName = mainViewModel.right()
+              Toast.makeText(this, "已切换到: $channelName", Toast.LENGTH_SHORT).show()
             }
           } else {
             // 滑动距离不足，恢复原位
@@ -545,10 +564,19 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
 
       // 菜单
       KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_P -> {
-        if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
-          SettingDialog(this).show()
+        val now = System.currentTimeMillis()
+
+        if (now - lastMenuClickTime < 500) {
+          handler.removeCallbacks(menuClickRunnable)
+          val channelName = mainViewModel.right()
+          if (channelName != null) {
+            Toast.makeText(this, "已切换到: $channelName", Toast.LENGTH_SHORT).show()
+          } else {
+            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+          }
         } else {
-          binding.btnMenu.callOnClick()
+          handler.postDelayed(menuClickRunnable, 500)
+          lastMenuClickTime = now
         }
       }
 
@@ -616,6 +644,8 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     releaseWakeLock()
     // 释放 WiFi 锁
     releaseWifiLock()
+
+    handler.removeCallbacksAndMessages(null)
   }
 
   private inner class NetworkBoardReceiver : BroadcastReceiver() {

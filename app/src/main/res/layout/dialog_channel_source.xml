@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/tv_title"
             android:textSize="19sp"
             android:textStyle="bold"
@@ -18,7 +18,7 @@
 
         <TextView
             android:layout_marginBottom="10dp"
-            android:text="上下选择，Ok(确认)键修改"
+            android:text="上下选择,Ok(确认)键修改,连按两下菜单键快速换源"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
