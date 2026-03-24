@@ -37,9 +37,10 @@
 - 方向下: 下一个频道
 - 左键: 声音减
 - 右键: 声音加
-- 确定键: 播放/暂停
+- 确定键: 换台
 - 数字键: 换台
-- 菜单键：选择换台
+- 菜单键：设置
+- 连续按两下菜单键：换源
 - 返回键：返回/退出
 - #号键：强制刷新当前频道（有问题时使用）
 
@@ -92,7 +93,7 @@ reboot # 重启设备
 
 这里提供以下下载地址:
 
-- [WebView更新](https://app.jdynb.xyz/webview/)
+- [平台自身维护WebView列表](http://app.jdynb.xyz/webview/)
 - [ApkMirror](https://www.apkmirror.com/apk/google-inc/android-system-webview/) (需要梯子)
 - [123网盘下载](https://www.123865.com/s/km2hjv-WOuOA) (32位)
 - [Gitee下载](https://gitee.com/jdy2002/android-webview/releases)
@@ -100,12 +101,15 @@ reboot # 重启设备
 
 ## 自定义频道
 
-频道完整配置文件 `main/assets/live-3.jsonc` [live-3.jsonc](https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/live-3.jsonc)
+目前不支持自定义源，如果你需要添加自己的源，请在公众号给我私信
+
+频道完整配置文件 `main/assets/live-3.jsonc` [live-3.jsonc](https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/lives/live-2026-03-19.jsonc)
 
 最新调整:
 
 - 去除 `number` 频道号码
-- 变更 `live.jsonc` 为 `live-3.jsonc`
+- 变更 `live.jsonc` 为 `/lives/live-2026-03-19.jsonc`
+- 增加频道上的 `children` 字段，支持换源
 
 ### 1. 对于没有验证的直播地址
 
@@ -346,7 +350,7 @@ playLive(result.data)
 
 ### simple 播放器内置的 html 代码
 
-`/main/assets/html/simple_player.html`
+[simple_player.html](/app/src/main/assets/html/simple_player.html)
 
 ```html
 <!doctype html>
@@ -477,6 +481,36 @@ playLive(result.data)
 ```
 
 其他使用方法，请查看项目的 `/app/src/main/assets` 中的代码
+
+### 配置多个源
+
+具体配置参考 [channel 配置](/app/src/main/assets/lives/live-2026-03-19.jsonc)
+
+```json5
+// channel 配置
+{
+  // ...
+  "channelName": "example",
+  // 设置多个源
+  "children": [
+    {
+      "channelName": "example-1",
+      "player": "base",
+      "args": {
+        "a": "b"
+      }
+    },
+    {
+      "channelName": "example-2",
+      "player": "common",
+      "args": {
+        liveUrl: "http://example.com/live.m3u8"
+      }
+    }
+  ]
+}
+```
+
 
 ## 截图
 
