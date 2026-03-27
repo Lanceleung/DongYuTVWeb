@@ -3,6 +3,7 @@ package xyz.jdynb.tv.ui.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -32,7 +33,6 @@ class SplashActivity : EngineActivity<ActivitySplashBinding>(R.layout.activity_s
     startActivity(Intent(this, WebVideoActivity::class.java))
 
     return*/
-
     val isInstallX5 = SPKeyConstants.IS_INSTALL_X5.getRequired(false)
 
     val flavor = BuildConfig.FLAVOR
@@ -44,17 +44,31 @@ class SplashActivity : EngineActivity<ActivitySplashBinding>(R.layout.activity_s
     // Android 13 以上不让安装X5内核
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU || flavor == "webview" || isInstallX5 || canLoadX5) {
       if (isInstallX5 || canLoadX5) {
+        var isEnter = false
+        binding.root.postDelayed({
+          if (isEnter) {
+            return@postDelayed
+          }
+          isEnter = true
+          enterHome()
+        }, 1500L) // 1500 毫秒超时时间
         // 原来每次都要初始化？
         QbSdk.initX5Environment(this, object : QbSdk.PreInitCallback {
           override fun onCoreInitFinished() {
+            Timber.i("onCoreInitFinished")
           }
 
           override fun onViewInitFinished(status: Boolean) {
             Timber.i(" onViewInitFinished is $status, ${QbSdk.isTbsCoreInited()}")
+            if (isEnter) {
+              return
+            }
+            isEnter = true
             enterHome()
           }
         })
       } else {
+        Timber.i("直接进入...")
         enterHome()
       }
       return

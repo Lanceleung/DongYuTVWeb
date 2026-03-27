@@ -5,10 +5,48 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
+import xyz.jdynb.tv.DongYuTVApplication
+
+fun String?.showToast(duration: Int = Toast.LENGTH_SHORT) {
+  this ?: return
+  Toast.makeText(DongYuTVApplication.context, this, duration).show()
+}
+
+/**
+ * 开启 activity
+ * @param args 传递的参数
+ */
+inline fun <reified T> startActivity(vararg args: Pair<String, Any>) {
+  val context = DongYuTVApplication.context
+  context.startActivity(Intent(context, T::class.java).apply {
+    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    args.forEach {
+      when (val second = it.second) {
+        is String -> putExtra(it.first, second)
+        is Int -> putExtra(it.first, second)
+        is Long -> putExtra(it.first, second)
+        is Float -> putExtra(it.first, second)
+        is Parcelable -> putExtra(it.first, second)
+      }
+    }
+  })
+}
+
+inline fun <reified T> startActivity(noinline block: (Intent.() -> Unit)? = null) {
+  val context = DongYuTVApplication.context
+  context.startActivity(Intent(context, T::class.java).also { intent ->
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    block?.let {
+      intent.it()
+    }
+  })
+}
 
 fun Any?.toBundle(): Bundle {
   return this?.javaClass?.let { clazz ->

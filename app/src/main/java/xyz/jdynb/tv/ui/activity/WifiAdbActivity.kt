@@ -211,7 +211,7 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
             val apkPath = packageManager.getApplicationInfo(packageName, 0).sourceDir
             val apkFile = File(apkPath)
             Timber.i("准备推送并安装：%s，大小：%d", apkPath, apkFile.length())
-            
+
             runOnUiThread {
               adbConnectModel.log = "\n正在将APK推送到远程设备...(耐心等待)" + adbConnectModel.log
               Toast.makeText(this, "正在将APK推送到远程设备...", Toast.LENGTH_SHORT).show()
@@ -227,7 +227,7 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
             }
             outputStream.flush()
             outputStream.close()
-            
+
             // cat 指令没有控制台输出，直接读取 inputStream 会导致界面永久阻塞，直接关闭流即可结束占用
             pushStream.close()
             Timber.i("推送结束。")
@@ -236,12 +236,12 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
             runOnUiThread {
               Toast.makeText(this, "正在安装...", Toast.LENGTH_SHORT).show()
             }
-            
+
             val installStream = manager.openStream("exec:pm install -r /data/local/tmp/temp.apk")
             val result = installStream.openInputStream().bufferedReader().readText()
             Timber.i("安装结果: %s", result)
             installStream.close()
-            
+
             runOnUiThread {
               adbConnectModel.log = "\n安装结果:\n$result" + adbConnectModel.log
               binding.scrollView.fullScroll(View.FOCUS_UP)
@@ -259,16 +259,27 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
 
       R.id.btn_exec -> {
         AlertDialog.Builder(this)
-          .setItems(arrayOf("开启自启动", "取消自启动", "设置默认桌面", "取消设置默认桌面")) {dialog, which ->
+          .setItems(
+            arrayOf(
+              "开启自启动",
+              "取消自启动",
+              "设置默认桌面",
+              "取消设置默认桌面",
+              "禁用软件安装程序",
+              "启用软件安装程序"
+            )
+          ) { dialog, which ->
             when (which) {
               0 -> {
                 // 开启自启动：实质上是启用 BootReceiver 组件
                 exec("pm enable ${packageName}/.receiver.BootReceiver")
               }
+
               1 -> {
                 // 取消自启动：实质上是禁用 BootReceiver 组件
                 exec("pm disable ${packageName}/.receiver.BootReceiver")
               }
+
               2 -> {
                 AlertDialog.Builder(this)
                   .setTitle("提示")
@@ -280,6 +291,7 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
                   .setPositiveButton("取消", null)
                   .show()
               }
+
               3 -> {
                 // 取消默认桌面使用 clear-default 清除默认应用设置
                 // exec("cmd package clear-default $packageName")
@@ -288,6 +300,21 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
                   .setMessage("打开设备的设置 -> 应用管理 -> 取消默认应用。或者你可以删除本App。")
                   .setNegativeButton("我知道了", null)
                   .show()
+              }
+
+              4 -> {
+                AlertDialog.Builder(this)
+                  .setTitle("提示")
+                  .setMessage("谨慎操作！禁用软件安装程序后，将无法通过USB安装软件，但不影响通过Wifi adb安装，可能会影响系统运行，请安装完成后恢复启用!")
+                  .setPositiveButton("取消", null)
+                  .setNegativeButton("确认") { dialog, which ->
+                    exec("pm disable-user com.android.packageinstaller")
+                  }
+                  .show()
+              }
+
+              5 -> {
+                exec("pm enable com.android.packageinstaller")
               }
             }
           }.show()
