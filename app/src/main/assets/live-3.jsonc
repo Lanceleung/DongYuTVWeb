@@ -232,6 +232,18 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hunan/play.js"
         ]
       }
+    },
+    {
+      "id": "shanghai",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanghai/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanghai/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1738,6 +1750,54 @@
           "channelName": "湖南爱晚",
           "args": {
             "id": "261"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "上海",
+      "player": "shanghai",
+      "channelList": [
+        {
+          "channelName": "东方卫视",
+          "args": {
+            "id": "1"
+          }
+        },
+        {
+          "channelName": "魔都眼",
+          "args": {
+            "id": "11"
+          }
+        },
+        {
+          "channelName": "第一财经",
+          "args": {
+            "id": "5"
+          }
+        },
+        {
+          "channelName": "新纪实",
+          "args": {
+            "id": "12"
+          }
+        },
+        {
+          "channelName": "五星体育",
+          "args": {
+            "id": "10"
+          }
+        },
+        {
+          "channelName": "都市频道",
+          "args": {
+            "id": "4"
+          }
+        },
+        {
+          "channelName": "哈哈炫动",
+          "args": {
+            "id": "9"
           }
         }
       ]
