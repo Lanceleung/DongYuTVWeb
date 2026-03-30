@@ -2203,6 +2203,48 @@
       ]
     },
     {
+      "channelType": "甘肃",
+      "player": "common",
+      "channelList": [
+        {
+          "channelName": "甘肃卫视",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/p9xpey.m3u8"
+          }
+        },
+        {
+          "channelName": "文化影视",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/634ojh.m3u8"
+          }
+        },
+        {
+          "channelName": "公共应急",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/37v51r.m3u8"
+          }
+        },
+        {
+          "channelName": "少儿",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/9g772s.m3u8"
+          }
+        },
+        {
+          "channelName": "科教",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/536s42.m3u8"
+          }
+        },
+        {
+          "channelName": "移动",
+          "args": {
+            "liveUrl": "https://hls.gstv.com.cn/skt649/37v51r.m3u8"
+          }
+        }
+      ]
+    },
+    {
       "channelType": "香港",
       "player": "common",
       "channelList": [
