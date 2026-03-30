@@ -254,6 +254,18 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanghai/play.js"
         ]
       }
+    },
+    {
+      "id": "xinjiang",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/xinjiang/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/xinjiang/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1321,10 +1333,20 @@
         {
           "channelName": "新疆卫视",
           "tvLogo": "https://resources.yangshipin.cn/assets/oms/image/202412/005fd504f809ab28ec8cdd5d34d3886f0611ddefa20ebcc0f3f7dc176ad528c7.png?imageMogr2/format/webp",
-          "args": {
-            "pid": "600152138",
-            "streamId": "2019927403"
-          }
+          "children": [
+            {
+              "channelName": "新疆卫视-高清",
+              "player": "ysp",
+              "args": {
+                "pid": "600152138",
+                "streamId": "2019927403"
+              }
+            },
+            {
+              "channelName": "新疆卫视",
+              "player": "xinjiang"
+            }
+          ]
         }
       ]
     },
@@ -2241,6 +2263,33 @@
           "args": {
             "liveUrl": "https://hls.gstv.com.cn/skt649/37v51r.m3u8"
           }
+        }
+      ]
+    },
+    {
+      "channelType": "新疆",
+      "player": "xinjiang",
+      "channelList": [
+        {
+          "channelName": "新疆卫视"
+        },
+        {
+          "channelName": "维吾尔语新闻综合频道"
+        },
+        {
+          "channelName": "哈萨克语新闻综合频道"
+        },
+        {
+          "channelName": "汉语综艺频道"
+        },
+        {
+          "channelName": "维吾尔语影视频道"
+        },
+        {
+          "channelName": "汉语体育健康频道"
+        },
+        {
+          "channelName": "少儿频道"
         }
       ]
     },
