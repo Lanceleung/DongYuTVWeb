@@ -266,6 +266,54 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/xinjiang/play.js"
         ]
       }
+    },
+    {
+      "id": "shanxi_taiyuan",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanxi_taiyuan/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shanxi_taiyuan/play.js"
+        ]
+      }
+    },
+    {
+      "id": "shenzhen",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shenzhen/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/shenzhen/play.js"
+        ]
+      }
+    },
+    {
+      "id": "fujian",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/fujian/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/fujian/play.js"
+        ]
+      }
+    },
+    {
+      "id": "neimenggu",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/neimenggu/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/neimenggu/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1274,10 +1322,20 @@
         {
           "channelName": "内蒙古卫视",
           "tvLogo": "https://resources.yangshipin.cn/assets/oms/image/202411/fe60396ae9ead3125d763146d8bc1e9b51ed8e19e8dc61600e28cc0b2f2d28c7.png?imageMogr2/format/webp",
-          "args": {
-            "pid": "600190401",
-            "streamId": "2025561203"
-          }
+          "children": [
+            {
+              "channelName": "内蒙古卫视-高清",
+              "player": "ysp",
+              "args": {
+                "pid": "600190401",
+                "streamId": "2025561203"
+              }
+            },
+            {
+              "channelName": "内蒙古卫视",
+              "player": "neimenggu"
+            }
+          ]
         },
         {
           "channelName": "云南卫视",
@@ -2289,6 +2347,182 @@
         },
         {
           "channelName": "少儿频道"
+        }
+      ]
+    },
+    {
+      "channelType": "深圳",
+      "hidden": true,
+      "channelList": [
+        {
+          "player": "shenzhen",
+          "channelName": "深圳卫视4k"
+        }
+      ]
+    },
+    {
+      "channelType": "福建",
+      "player": "fujian",
+      "channelList": [
+        {
+          "channelName": "综合频道",
+          "args": {
+            "id": "665248990102917120"
+          }
+        },
+        {
+          "channelName": "公共频道",
+          "args": {
+            "id": "665248940467523584"
+          }
+        },
+        {
+          "channelName": "新闻频道",
+          "args": {
+            "id": "665248914378952704"
+          }
+        },
+        {
+          "channelName": "旅游频道",
+          "args": {
+            "id": "665248752898248704"
+          }
+        },
+        {
+          "channelName": "经济生活频道",
+          "args": {
+            "id": "665248614498799616"
+          }
+        },
+        {
+          "channelName": "文体频道",
+          "args": {
+            "id": "665248584991870976"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "内蒙古",
+      "player": "neimenggu",
+      "channelList": [
+        {
+          "channelName": "内蒙古卫视"
+        },
+        {
+          "channelName": "内蒙古蒙古语卫视"
+        },
+        {
+          "channelName": "新闻综合"
+        },
+        {
+          "channelName": "经济生活"
+        },
+        {
+          "channelName": "少儿频道"
+        },
+        {
+          "channelName": "文体娱乐"
+        },
+        {
+          "channelName": "农牧频道"
+        },
+        {
+          "channelName": "呼和浩特"
+        },
+        {
+          "channelName": "包头"
+        },
+        {
+          "channelName": "乌海"
+        },
+        {
+          "channelName": "赤峰"
+        },
+        {
+          "channelName": "呼伦贝尔"
+        },
+        {
+          "channelName": "兴安盟"
+        },
+        {
+          "channelName": "锡林郭勒"
+        },
+        {
+          "channelName": "阿拉善"
+        },
+        {
+          "channelName": "鄂尔多斯"
+        },
+        {
+          "channelName": "巴彦淖尔"
+        },
+        {
+          "channelName": "乌兰察布"
+        },
+        {
+          "channelName": "阿拉善"
+        }
+      ]
+    },
+    {
+      "channelType": "地方",
+      "channelList": [
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "新闻综合",
+          "desc": "山西太原",
+          "args": {
+            "id": "49VAfrw"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "经济生活",
+          "desc": "山西太原",
+          "args": {
+            "id": "u8BmT6h"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "社教法制",
+          "desc": "山西太原",
+          "args": {
+            "id": "phsry3e"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "影视",
+          "desc": "山西太原",
+          "args": {
+            "id": "J4EX72D"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "文体",
+          "desc": "山西太原",
+          "args": {
+            "id": "rk8Z088"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "城市生活",
+          "desc": "山西太原",
+          "args": {
+            "id": "i88rmGU"
+          }
+        },
+        {
+          "player": "shanxi_taiyuan",
+          "channelName": "太原教育",
+          "desc": "山西太原",
+          "args": {
+            "id": "g4XtSCF"
+          }
         }
       ]
     },

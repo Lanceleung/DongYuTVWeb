@@ -12,6 +12,7 @@ import com.tencent.smtt.export.external.interfaces.WebResourceResponse
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import xyz.jdynb.tv.BuildConfig
 import xyz.jdynb.tv.model.LiveChannelModel
 import xyz.jdynb.tv.utils.NetworkUtils.inputStream
 import xyz.jdynb.tv.utils.SpUtils.remove
@@ -37,7 +38,7 @@ class SimpleLivePlayerFragment : BaseLivePlayerFragment() {
     url: String,
     request: WebResourceRequest
   ): WebResourceResponse? {
-    Log.i(TAG, "${request.method} url: $url")
+    // Log.i(TAG, "${request.method} url: $url")
 
     val shouldIntercept = super.shouldInterceptRequest(url, request)
     // 网页已自动注入，这里不需要修改
@@ -53,7 +54,7 @@ class SimpleLivePlayerFragment : BaseLivePlayerFragment() {
     }*/
 
     val referer = request.requestHeaders["X-Referer"]
-    Log.i(TAG, "Referer: $referer")
+    // Log.i(TAG, "Referer: $referer")
 
     val isSteamFile = url.contains(".m3u8") || url.contains(".ts")
 
@@ -79,7 +80,9 @@ class SimpleLivePlayerFragment : BaseLivePlayerFragment() {
 
     request.requestHeaders["Referer"] = (referer ?: (urlObj.scheme + "://" + urlObj.host + "/"))
 
-    Log.i(TAG, "headers: ${request.requestHeaders}")
+    if (BuildConfig.DEBUG) {
+      Log.i(TAG, "mimeType: $mimeType, headers: ${request.requestHeaders}, body: $body")
+    }
 
     return WebResourceResponse(
       mimeType, "UTF-8", url

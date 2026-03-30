@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import timber.log.Timber
 import xyz.jdynb.tv.utils.SpUtils.remove
 import xyz.jdynb.tv.BuildConfig
 import xyz.jdynb.tv.DongYuTVApplication
@@ -104,7 +105,7 @@ object NetworkUtils {
     body: String? = null
   ): InputStream? {
     return try {
-      createConnection(this, method).apply {
+      val connection = createConnection(this, method).apply {
         headers?.let {
           for ((key, value) in headers) {
             setRequestProperty(key, value)
@@ -116,8 +117,10 @@ object NetworkUtils {
             it.write(body.toByteArray())
           }
         }
-      }.inputStream
-    } catch (_: IOException) {
+      }
+      connection.inputStream
+    } catch (e: IOException) {
+      Timber.e("Error occurred while making HTTP request: ${e.message}")
       null
     }
   }
