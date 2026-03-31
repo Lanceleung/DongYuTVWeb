@@ -139,6 +139,6 @@ async function getCDNKey_shenzhen(id, key) {
   const url = await getCDNKey_shenzhen(channelList[0].id, CryptoJS.enc.Utf8.stringify(keyArray))
   console.log('url: ', url)
   playLive(url, {
-    "X-Referer": "https://www.sztv.com.cn/"
+    "Referer": "https://www.sztv.com.cn/"
   })
 })();

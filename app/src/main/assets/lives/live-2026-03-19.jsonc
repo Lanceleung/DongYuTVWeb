@@ -314,6 +314,19 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/neimenggu/play.js"
         ]
       }
+    },
+    {
+      "id": "guizhou",
+      "url": "https://web.guangdianyun.tv/tv/{{id}}?uin={{uin}}",
+      "name": "base",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/guizhou/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/guizhou/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -2351,16 +2364,6 @@
       ]
     },
     {
-      "channelType": "深圳",
-      "hidden": true,
-      "channelList": [
-        {
-          "player": "shenzhen",
-          "channelName": "深圳卫视4k"
-        }
-      ]
-    },
-    {
       "channelType": "福建",
       "player": "fujian",
       "channelList": [
@@ -2466,6 +2469,20 @@
       ]
     },
     {
+      "channelType": "贵州",
+      "hidden": true,
+      "player": "guizhou",
+      "channelList": [
+        {
+          "channelName": "新闻综合",
+          "args": {
+            "id": "3398",
+            "uin": "4263"
+          }
+        }
+      ]
+    },
+    {
       "channelType": "地方",
       "channelList": [
         {
@@ -2523,6 +2540,72 @@
           "args": {
             "id": "g4XtSCF"
           }
+        },
+        {
+          "player": "common",
+          "channelName": "剑阁综合",
+          "desc": "四川广元",
+          "args": {
+            "liveUrl": "https://m3u8.channel.dzsm.com/nmip-media/channellive/channel105549/playlist.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "雅安新闻综合",
+          "desc": "四川雅安",
+          "args": {
+            "liveUrl": "https://m3u8.channel.dzsm.com/nmip-media/channellive/channel105549/playlist.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "泸州新闻综合",
+          "desc": "四川泸州",
+          "args": {
+            "liveUrl": "https://m3u8.channel.luzhoubs.com/nmip-media/channellive/channel106011/playlist.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "黑水新闻综合",
+          "desc": "四川阿坝州",
+          "args": {
+            "liveUrl": "http://live.schstv.com:90/live/xwzh.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "长宁综合",
+          "desc": "四川长宁",
+          "args": {
+            "liveUrl": "http://cnpull.sccnfb.com/live/123456.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "泸县新闻综合",
+          "desc": "四川泸县",
+          "args": {
+            "liveUrl": "http://lxfile.lxxcb.cn/nmip-media/channellive/channel103799/playlist.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "夹江新闻综合",
+          "desc": "四川夹江",
+          "args": {
+            "liveUrl": "https://tvfile.jjrm.org.cn/nmip-media/channellive/channel106282/playlist.m3u8"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "深圳",
+      "hidden": true,
+      "channelList": [
+        {
+          "player": "shenzhen",
+          "channelName": "深圳卫视4k"
         }
       ]
     },
