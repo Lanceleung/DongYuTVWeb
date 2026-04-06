@@ -1,3 +1,21 @@
+function addVideoListener() {
+    const video = document.querySelector('video')
+    if (video) {
+        video.addEventListener('playing', function() {
+            if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                JSBridge.hideLoading()
+            }
+        })
+
+        return
+    }
+    setTimeout(() => {
+        addVideoListener()
+    }, 20)
+}
+
+addVideoListener()
+
 async function initLivePlayer() {
     let live = window.livePlayerInstance
     let flag = true
@@ -88,14 +106,6 @@ async function clear() {
     const player = document.querySelector(".tv-main-con-l-vid")
     if (player) {
         const live = await initLivePlayer()
-        const video = document.querySelector('video')
-        if (video) {
-            video.addEventListener('playing', function() {
-                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
-                    JSBridge.hideLoading()
-                }
-            })
-        }
 
         if (live) {
             // live.videoConfig.pid = '{{pid}}'
