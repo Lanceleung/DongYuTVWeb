@@ -6,15 +6,11 @@ import android.widget.Toast
 import com.drake.engine.utils.AppUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import xyz.jdynb.tv.BuildConfig
 import xyz.jdynb.tv.config.Api
-import xyz.jdynb.tv.dialog.UpdateDialog
+import xyz.jdynb.tv.ui.dialog.UpdateDialog
 import xyz.jdynb.tv.exception.ResultDataNullException
 import xyz.jdynb.tv.model.UpdateModel
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
 
 object UpdateUtils {
 

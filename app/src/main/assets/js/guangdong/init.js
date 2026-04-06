@@ -24,6 +24,12 @@
             document.body.style.width = '100vw'
             document.body.style.height = '100vh'
             document.body.style.background = '#000'
+
+            video.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
             return
         }
         setTimeout(() => {

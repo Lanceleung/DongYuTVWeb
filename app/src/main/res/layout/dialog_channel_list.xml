@@ -4,112 +4,135 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:gravity="center_vertical"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <Button
-                android:focusable="true"
-                android:background="@drawable/bg_select"
-                android:textSize="17sp"
                 android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_select"
+                android:focusable="true"
                 android:text="返回"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="17sp" />
 
             <Button
-                android:layout_marginStart="8dp"
-                android:focusable="true"
-                android:background="@drawable/bg_select"
-                android:textSize="17sp"
                 android:id="@+id/btn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_select"
+                android:focusable="true"
                 android:text="搜索"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="17sp" />
 
 
             <Button
-                android:layout_marginStart="8dp"
-                android:focusable="true"
-                android:background="@drawable/bg_select"
-                android:textSize="17sp"
                 android:id="@+id/btn_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_select"
+                android:focusable="true"
                 android:text="刷新"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="17sp" />
 
             <Button
-                android:layout_marginStart="8dp"
-                android:focusable="true"
-                android:background="@drawable/bg_select"
-                android:textSize="17sp"
                 android:id="@+id/btn_switch_channel"
-                android:text="换源"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_select"
+                android:focusable="true"
+                android:text="换源"
+                android:textSize="17sp" />
 
             <Button
-                android:layout_marginStart="8dp"
-                android:focusable="true"
-                android:background="@drawable/bg_select"
-                android:textSize="17sp"
                 android:id="@+id/btn_setting"
-                android:text="设置"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_select"
+                android:focusable="true"
+                android:text="设置"
+                android:textSize="17sp" />
 
             <TextView
-                android:layout_marginStart="8dp"
-                tools:text="15秒无操作后自动返回"
                 android:id="@+id/tv_tips"
-                android:textSize="20sp"
-                android:textColor="@color/white"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                tools:text="15秒无操作后自动返回" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:padding="20dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_height="0dp">
+            android:orientation="horizontal"
+            android:padding="20dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_gravity="center_vertical"
-                android:id="@+id/rv_group"
-                android:orientation="vertical"
-                tools:listitem="@layout/item_list_group"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            <LinearLayout
                 android:layout_width="150dp"
-                android:layout_height="wrap_content"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:textColor="@color/tv_select"
+                    android:layout_marginBottom="4dp"
+                    android:textStyle="bold"
+                    android:id="@+id/btn_favorite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_select"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:text="收藏"
+                    android:textSize="19sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_list_group" />
+
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:layout_marginStart="10dp"
                 android:id="@+id/rv_channel"
-                tools:listitem="@layout/item_list_channel"
-                app:spanCount="4"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                android:orientation="vertical"
-                android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="4"
+                tools:listitem="@layout/item_list_channel" />
 
         </LinearLayout>
 
-       <!-- <TextView
-            android:alpha="0.7"
-            android:text="公众号: 冬日暖雨，QQ交流群：1038112042 点击设置检查更新"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>-->
+         <TextView
+             android:layout_gravity="center_horizontal"
+             android:paddingHorizontal="10dp"
+             android:alpha="0.7"
+             android:textColor="@android:color/holo_red_light"
+             android:text="播放页长按OK键收藏/取消收藏，左右方向键换源。光标聚焦位置长按OK键收藏/取消收藏"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

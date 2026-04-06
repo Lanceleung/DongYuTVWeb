@@ -16,6 +16,11 @@
             const scale = Math.min(scaleW, scaleH)
             videoDiv.style.width = `${scale * 940}px`
             videoDiv.style.height = `${scale * 570}px`
+            videoDiv.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
             return
         }
 

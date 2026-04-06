@@ -1,4 +1,4 @@
-package xyz.jdynb.tv.dialog
+package xyz.jdynb.tv.ui.dialog
 
 import android.content.Context
 import android.os.Bundle

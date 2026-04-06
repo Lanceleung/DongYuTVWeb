@@ -58,12 +58,6 @@ class CrashActivity : EngineToolbarActivity<ActivityCrashBinding>(R.layout.activ
         UpdateUtils.checkUpdate(this@CrashActivity, true)
       }
     }
-
-    /*Toast.makeText(this, "30秒后自动重启", Toast.LENGTH_SHORT).show()
-
-    Handler(Looper.getMainLooper()).postDelayed({
-      binding.restartApp.callOnClick()
-    }, 30000L)*/
   }
 
   override fun initData() {

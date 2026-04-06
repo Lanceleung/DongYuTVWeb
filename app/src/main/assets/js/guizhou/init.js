@@ -8,6 +8,12 @@ function fullscreen() {
         video.style.height = '100%'
         video.style['z-index'] = 9999
         video.startPlay()
+
+        video.addEventListener('playing', function() {
+            if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                JSBridge.hideLoading()
+            }
+        })
      return
    }
 

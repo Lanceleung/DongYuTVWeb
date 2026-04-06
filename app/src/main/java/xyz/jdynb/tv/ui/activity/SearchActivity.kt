@@ -1,11 +1,9 @@
 package xyz.jdynb.tv.ui.activity
 
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.util.Log
 import android.view.View
@@ -31,8 +29,8 @@ import xyz.jdynb.tv.config.Api
 import xyz.jdynb.tv.constants.IntentActionConstants
 import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivitySearchBinding
-import xyz.jdynb.tv.dialog.SettingDialog
-import xyz.jdynb.tv.dialog.UserAuthDialog
+import xyz.jdynb.tv.ui.dialog.SettingDialog
+import xyz.jdynb.tv.ui.dialog.UserAuthDialog
 import xyz.jdynb.tv.utils.NetworkUtils
 import xyz.jdynb.tv.utils.UpdateUtils
 import java.util.concurrent.atomic.AtomicBoolean

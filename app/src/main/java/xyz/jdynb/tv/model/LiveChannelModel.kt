@@ -3,8 +3,13 @@ package xyz.jdynb.tv.model
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
+import androidx.databinding.PropertyChangeRegistry
+import com.drake.brv.binding.ObservableIml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import org.litepal.annotation.Column
+import org.litepal.crud.LitePalSupport
 import xyz.jdynb.tv.BR
 
 /**
@@ -30,6 +35,7 @@ data class LiveChannelModel(
   /**
    * 直播序号（对应键盘输入）唯一值
    */
+  @Transient
   var number: Int = 0,
 
   /**
@@ -60,8 +66,15 @@ data class LiveChannelModel(
   /**
    * 子频道
    */
-  val children: List<LiveChannelModel> = listOf()
-) : BaseObservable() {
+  @Column(ignore = true)
+  val children: List<LiveChannelModel> = listOf(),
+): LitePalSupport(), ObservableIml {
+
+  @Transient
+  override val registry: PropertyChangeRegistry = PropertyChangeRegistry()
+
+  @Transient
+  var id: Long = 0L
 
   val showDesc: String get() = desc ?: ""
 
@@ -69,6 +82,7 @@ data class LiveChannelModel(
    * 选中状态
    */
   @get:Bindable
+  @Column(ignore = true)
   var isSelected: Boolean = false
     set(value) {
       field = value

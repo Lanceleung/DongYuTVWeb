@@ -31,9 +31,9 @@ import com.drake.engine.utils.NetworkUtils
 import kotlinx.coroutines.launch
 import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivityMainBinding
-import xyz.jdynb.tv.dialog.ChannelListDialog
-import xyz.jdynb.tv.dialog.ChannelSourceDialog
-import xyz.jdynb.tv.dialog.SettingDialog
+import xyz.jdynb.tv.ui.dialog.ChannelListDialog
+import xyz.jdynb.tv.ui.dialog.ChannelSourceDialog
+import xyz.jdynb.tv.ui.dialog.SettingDialog
 import xyz.jdynb.tv.ui.activity.SearchActivity
 import xyz.jdynb.tv.ui.fragment.LivePlayerFragment
 import xyz.jdynb.tv.utils.SpUtils.getRequired
@@ -232,7 +232,6 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
 
     if (currentChannelModel.children.isEmpty()) {
       Toast.makeText(this, "当前频道没有子频道", Toast.LENGTH_SHORT).show()
-      return
     }
 
     ChannelSourceDialog(
@@ -528,16 +527,35 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
       .start()
   }
 
+  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    return super.onKeyDown(keyCode, event)
+  }
+
+  override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    return super.onKeyUp(keyCode, event)
+  }
+
+  override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+    // 虚拟机上按按了 enter、空格键就只有 dispatchKeyEvent 可以响应？
+    return super.onKeyLongPress(keyCode, event)
+  }
+
+  private var isLongPress = false
+
   /**
-   * 事件分发时就拦截，避免事件被 webview 拦截
+   * 事件分发
    */
   override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-    val keyCode = event.keyCode
-    val action = event.action
-    if (action != KeyEvent.ACTION_DOWN) {
+    when (event.action) {
+      KeyEvent.ACTION_DOWN -> {
+        isLongPress = event.repeatCount > 4
+      }
+    }
+    // Timber.i("dispatchKeyEvent: ${event.keyCode}, ${event.action} ${event.repeatCount}")
+    if (event.action != KeyEvent.ACTION_UP) {
       return super.dispatchKeyEvent(event)
     }
-    when (keyCode) {
+    when (val keyCode = event.keyCode) {
       /**
        * 上
        */
@@ -547,6 +565,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         } else {
           mainViewModel.up()
         }
+        return true
       }
 
       /**
@@ -558,16 +577,21 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         } else {
           mainViewModel.down()
         }
+        return true
       }
 
       // ENTER、OK（确认）
       KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-        Log.d(TAG, "onKeyDown: Ok")
+        if (isLongPress) {
+          mainViewModel.favoriteOrUnFavorite()
+          return true
+        }
         if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
           binding.btnMenu.callOnClick()
         } else {
           livePlayerFragment?.resumeOrPause()
         }
+        return true
       }
 
       // 静音
@@ -580,45 +604,60 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
           )
         } catch (_: Exception) {
         }
+        return true
+      }
+
+      KeyEvent.KEYCODE_DPAD_LEFT -> {
+        if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
+          volumeDown()
+        } else {
+          val source = mainViewModel.left()
+          if (source == null) {
+            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+            return true
+          }
+          Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
+          return true
+        }
       }
 
       //  volume down、left
-      KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_DPAD_LEFT -> {
-        try {
-          audioManager.adjustStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            AudioManager.ADJUST_LOWER,
-            AudioManager.FLAG_SHOW_UI
-          )
-        } catch (_: Exception) {
+      KeyEvent.KEYCODE_VOLUME_DOWN -> {
+        volumeDown()
+        return true
+      }
+
+      KeyEvent.KEYCODE_DPAD_RIGHT -> {
+        if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
+          volumeUp()
+        } else {
+          val source = mainViewModel.right()
+          if (source == null) {
+            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+            return true
+          }
+          Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
+          return true
         }
       }
 
       // volume up、right
-      KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_DPAD_RIGHT -> {
-        val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        if (volume < audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) {
-          try {
-            audioManager.adjustStreamVolume(
-              AudioManager.STREAM_MUSIC,
-              AudioManager.ADJUST_RAISE,
-              AudioManager.FLAG_SHOW_UI
-            )
-          } catch (e: Exception) {
-            Log.e(TAG, e.message.toString())
-          }
-        }
+      KeyEvent.KEYCODE_VOLUME_UP -> {
+        volumeUp()
+        return true
       }
 
       // 返回
       KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> {
-      handleBackPress()
-    }
+        handleBackPress()
+        return true
+      }
 
       // #
       // 重新加载
       KeyEvent.KEYCODE_POUND -> {
         livePlayerFragment?.refresh()
+        return true
       }
 
       // 主页
@@ -642,6 +681,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
           handler.postDelayed(menuClickRunnable, 500)
           lastMenuClickTime = now
         }
+        return true
       }
 
       // 0
@@ -658,6 +698,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         Log.i(TAG, "input number: $num")
 
         mainViewModel.appendNumber(num)
+        return true
       }
     }
     return super.dispatchKeyEvent(event)
@@ -729,6 +770,32 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         Toast.makeText(context, "已断开网络，当网络连接后自动刷新页面", Toast.LENGTH_LONG).show()
       }
       isNetworkConnected = currentNetworkConnected
+    }
+  }
+
+  private fun volumeDown() {
+    try {
+      audioManager.adjustStreamVolume(
+        AudioManager.STREAM_MUSIC,
+        AudioManager.ADJUST_LOWER,
+        AudioManager.FLAG_SHOW_UI
+      )
+    } catch (_: Exception) {
+    }
+  }
+
+  private fun volumeUp() {
+    val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+    if (volume < audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) {
+      try {
+        audioManager.adjustStreamVolume(
+          AudioManager.STREAM_MUSIC,
+          AudioManager.ADJUST_RAISE,
+          AudioManager.FLAG_SHOW_UI
+        )
+      } catch (e: Exception) {
+        Log.e(TAG, e.message.toString())
+      }
     }
   }
 

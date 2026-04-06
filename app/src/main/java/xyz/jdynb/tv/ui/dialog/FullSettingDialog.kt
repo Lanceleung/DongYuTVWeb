@@ -1,4 +1,4 @@
-package xyz.jdynb.tv.dialog
+package xyz.jdynb.tv.ui.dialog
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -27,6 +27,7 @@ class FullSettingDialog(context: Context): EngineDialog<DialogSettingFullBinding
   }
 
   override fun initView() {
+    binding.btnClose.requestFocus()
     binding.btnClose.setOnClickListener {
       dismiss()
     }
@@ -43,6 +44,7 @@ class FullSettingDialog(context: Context): EngineDialog<DialogSettingFullBinding
     binding.swHome.initSwitch(SPKeyConstants.ALLOW_SET_HOME, false) {
       Toast.makeText(context, "下次启动时生效", Toast.LENGTH_SHORT).show()
     }
+    binding.swVolumeDirection.initSwitch(SPKeyConstants.VOLUME_CONTROL_DIRECTION, false)
   }
 
   private fun SwitchCompat.initSwitch(key: String, default: Boolean, listener: ((Boolean) -> Unit)? = null) {

@@ -14,15 +14,18 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    google()
     mavenCentral()
+    google()
     maven {
       setUrl("https://jitpack.io")
     }
+    maven { setUrl("https://artifact.bytedance.com/repository/releases/") }
+    maven { setUrl("https://maven.aliyun.com/nexus/content/groups/public/") }
+    maven { setUrl("https://maven.aliyun.com/nexus/content/repositories/jcenter") }
+    maven { setUrl("https://s01.oss.sonatype.org/content/groups/public") }
     maven {
       setUrl("https://maven.mozilla.org/maven2/")
     }
-    maven { setUrl("https://artifact.bytedance.com/repository/releases/") }
   }
 }
 

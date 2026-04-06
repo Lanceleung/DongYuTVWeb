@@ -10,6 +10,7 @@ import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import com.drake.brv.utils.BRV
 import com.drake.engine.base.Engine
+import org.litepal.LitePal
 import timber.log.Timber
 import java.io.File
 
@@ -34,6 +35,8 @@ class DongYuTVApplication : Application() {
 
     Engine.initialize(this)
     BRV.modelId = BR.m
+
+    LitePal.initialize(this)
 
     if (BuildConfig.DEBUG) {
       Timber.plant(Timber.DebugTree())

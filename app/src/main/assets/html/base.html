@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BASE</title>
+    <script src="../js/lib/dy-http-util.js"></script>
+    <script src="../js/lib/dy-crypto-js.min.js"></script>
+</head>
+<body>
+</body>
+
+<script>
+    function play(url, headers) {
+        console.log('NativePlay:', url)
+
+        if (typeof window.WebViewJavaScriptBridge !== 'undefined') {
+            WebViewJavaScriptBridge.play(url)
+        }
+    }
+</script>
+</html>

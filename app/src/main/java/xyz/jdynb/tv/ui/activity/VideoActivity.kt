@@ -44,7 +44,7 @@ import xyz.jdynb.tv.DongYuTVApplication
 import xyz.jdynb.tv.R
 import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivityVideoBinding
-import xyz.jdynb.tv.dialog.VideoSettingDialog
+import xyz.jdynb.tv.ui.dialog.VideoSettingDialog
 import xyz.jdynb.tv.media.ApiUriResolve
 import xyz.jdynb.tv.model.MovieModel
 import xyz.jdynb.tv.model.VideoProgressModel

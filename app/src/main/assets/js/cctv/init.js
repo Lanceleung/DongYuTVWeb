@@ -14,6 +14,12 @@ const classNames = ['newtopbz', 'newtopbzTV'];
         player.style.width = '100vw'
         player.style.height = '100vh'
         player.style.zIndex = 9999
+
+        player.addEventListener('playing', function() {
+            if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                JSBridge.hideLoading()
+            }
+        })
     } else {
         setTimeout(function() {
             AutoFullscreen();

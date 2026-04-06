@@ -23,12 +23,31 @@
             z-index: 99;
             width: 100vw;
             height: 100vh;
+            background: #000;
             font-size: 30px;
             font-weight: bold;
             color: white;
             display:flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* 隐藏所有默认控件（包括播放按钮） */
+        video::-webkit-media-controls {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-play-button {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-start-playback-button {
+            display: none !important;
+        }
+
+        /* X5 特定选择器 */
+        video::-webkit-media-controls-enclosure {
+            display: none !important;
         }
     </style>
     <script src="../js/lib/dy-http-util.js"></script>
@@ -45,7 +64,7 @@
 <script>
     const video = document.querySelector("#video")
 
-    video.addEventListener('loadeddata', function() {
+    video.addEventListener('playing', function() {
         hideLoading()
     })
 
@@ -80,6 +99,11 @@
         video.volume = 1
         console.log('liveUrl:', url)
         window.currentLiveUrl = url
+
+        // 显示加载动画
+        if (typeof JSBridge !== 'undefined' && JSBridge.showLoading) {
+            JSBridge.showLoading()
+        }
         
         // 检查是否支持 HLS.js 且为 m3u8 文件
         if (Hls.isSupported() && url.includes('.m3u8')) {

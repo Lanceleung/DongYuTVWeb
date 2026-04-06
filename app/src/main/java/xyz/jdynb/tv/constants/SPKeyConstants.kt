@@ -114,6 +114,16 @@ class SPKeyConstants {
      * 是否允许设置为首页
      */
     const val ALLOW_SET_HOME = "allow_set_home"
+
+    /**
+     * 方向键控制音量
+     */
+    const val VOLUME_CONTROL_DIRECTION = "volume_control_direction"
+
+    /**
+     * 播放超时时间
+     */
+    const val PLAY_TIMEOUT_DURATION = "play_timeout_duration"
   }
 
 }

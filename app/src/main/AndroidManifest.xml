@@ -98,6 +98,8 @@
 
         <activity android:name=".ui.activity.WifiAdbActivity" />
 
+        <activity android:name=".ui.activity.NativeLivePlayerActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.drake.file_provider"

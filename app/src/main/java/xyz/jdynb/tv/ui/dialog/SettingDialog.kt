@@ -1,11 +1,9 @@
-package xyz.jdynb.tv.dialog
+package xyz.jdynb.tv.ui.dialog
 
 import android.app.Dialog
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -18,7 +16,6 @@ import com.drake.engine.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import xyz.jdynb.tv.MainActivity
 import xyz.jdynb.tv.MainViewModel
 import xyz.jdynb.tv.utils.SpUtils.getRequired
 import xyz.jdynb.tv.utils.SpUtils.put
@@ -27,7 +24,6 @@ import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.DialogSettingBinding
 import xyz.jdynb.tv.ui.activity.WifiAdbActivity
 import xyz.jdynb.tv.utils.UpdateUtils
-import xyz.jdynb.tv.utils.showToast
 import kotlin.system.exitProcess
 
 class SettingDialog(context: Context, private val mainViewModel: MainViewModel? = null) :
@@ -47,6 +43,9 @@ class SettingDialog(context: Context, private val mainViewModel: MainViewModel? 
 
     binding.btnBack.requestFocus()
 
+    Glide.with(context)
+      .load("file:///android_asset/images/qrcode.png")
+      .into(binding.ivQrcode2)
 
     binding.swHome.initSwitch(SPKeyConstants.HOME_DEFAULT_SEARCH, false) {
       Toast.makeText(context, "下次启动时生效", Toast.LENGTH_SHORT).show()

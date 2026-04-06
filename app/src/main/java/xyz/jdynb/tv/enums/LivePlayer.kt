@@ -2,17 +2,11 @@ package xyz.jdynb.tv.enums
 
 import xyz.jdynb.tv.ui.fragment.BaseLivePlayerFragment
 import xyz.jdynb.tv.ui.fragment.SimpleLivePlayerFragment
-import xyz.jdynb.tv.ui.fragment.YspLivePlayerFragment
 
 /**
  * 播放器配置
  */
 enum class LivePlayer(val player: String, val clazz: Class<*>) {
-  /**
-   * 央视频播放器
-   */
-  YSP("ysp", YspLivePlayerFragment::class.java),
-
   /**
    * 简单视频播放器
    */
@@ -39,7 +33,7 @@ enum class LivePlayer(val player: String, val clazz: Class<*>) {
      */
     @JvmStatic
     fun getLivePlayerForClass(clazz: Class<*>): LivePlayer {
-      return LivePlayer.entries.find { it.clazz == clazz } ?: YSP
+      return LivePlayer.entries.find { it.clazz == clazz } ?: BASE
     }
   }
 }

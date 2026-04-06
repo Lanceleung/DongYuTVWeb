@@ -43,6 +43,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+            <TextView
+                android:gravity="center_horizontal"
+                android:text="左右方向键换源，长按OK键收藏/取消收藏。\n直播内容为互联网网站内容，本App不提供实际直播服务！"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+"
         </LinearLayout>
 
     </FrameLayout>

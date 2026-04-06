@@ -34,8 +34,8 @@ android {
     minSdk = 21
     //noinspection ExpiredTargetSdkVersion
     targetSdk = 28
-    versionCode = 22
-    versionName = "1.0.15"
+    versionCode = 24
+    versionName = "1.0.17"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     signingConfig = signingConfigs.getByName("debug")
@@ -168,6 +168,7 @@ dependencies {
   // "x5Implementation"(files("libs/tbs_sdk-44382-202411081743-release.aar"))
   implementation(project(":easydanmaku"))
   implementation(libs.okhttp.profiler)
+  implementation(libs.litepal)
   // ===================== 调试 ==================
   debugImplementation("com.willowtreeapps.hyperion:hyperion-core:0.9.38")
   debugImplementation("com.willowtreeapps.hyperion:hyperion-timber:0.9.38")

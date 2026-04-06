@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
@@ -23,6 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import org.litepal.LitePal
+import org.litepal.extension.deleteAll
+import org.litepal.extension.findAll
+import org.litepal.extension.findFirst
+import timber.log.Timber
 import xyz.jdynb.tv.utils.SpUtils.getRequired
 import xyz.jdynb.tv.utils.SpUtils.put
 import xyz.jdynb.tv.constants.SPKeyConstants
@@ -33,6 +37,7 @@ import xyz.jdynb.tv.model.LiveChannelTypeModel
 import xyz.jdynb.tv.model.LiveModel
 import xyz.jdynb.tv.utils.NetworkUtils
 import xyz.jdynb.tv.utils.SpUtils.get
+import xyz.jdynb.tv.utils.showToast
 
 class MainViewModel : ViewModel() {
 
@@ -80,6 +85,10 @@ class MainViewModel : ViewModel() {
    * 频道分组列表
    */
   val channelTypeModelList = _channelTypeModelList.asStateFlow()
+
+  private val _favoriteChannelModelList = MutableStateFlow<List<LiveChannelModel>?>(null)
+
+  val favoriteChannelModelList = _favoriteChannelModelList.asStateFlow()
 
   private val _showActions = MutableStateFlow(true)
 
@@ -132,9 +141,13 @@ class MainViewModel : ViewModel() {
       if (currentChannelModel.children.isNotEmpty()) {
         // 如果有子频道，则读取子频道的配置并设置
         // 读取保存的索引
-        val index = "channel_config_${currentChannelModel.channelType}".get<Int>(currentChannelModel.channelName, 0) ?: 0
-        Log.i(TAG, "index: $index, ${currentChannelModel.channelName}")
-        val savedChannelModel = currentChannelModel.children.getOrNull(index) ?: currentChannelModel.children.first()
+        val index = "channel_config_${currentChannelModel.channelType}".get<Int>(
+          currentChannelModel.channelName,
+          0
+        ) ?: 0
+        Timber.i("index: $index, ${currentChannelModel.channelName}")
+        val savedChannelModel =
+          currentChannelModel.children.getOrNull(index) ?: currentChannelModel.children.first()
         if (savedChannelModel.player.isNotEmpty()) {
           currentChannelModel.player = savedChannelModel.player
         }
@@ -147,7 +160,9 @@ class MainViewModel : ViewModel() {
     // 改变时都会执行这里
     .onEach {
       // 设置当前的频道分类
-      Log.i(TAG, "beforeChannelPlayer: ${_currentChannelPlayer.value} afterChannelPlayer: ${it.player}")
+      Timber.i(
+        "beforeChannelPlayer: ${_currentChannelPlayer.value} afterChannelPlayer: ${it.player}"
+      )
       _currentChannelType.value = it.channelType
       _currentChannelPlayer.value = it.player
       // 保存当前的频道信息
@@ -155,7 +170,7 @@ class MainViewModel : ViewModel() {
     }
     // 发生错误时
     .catch {
-      Log.e(TAG, "获取频道信息失败: ", it)
+      Timber.e(it, "获取频道信息失败")
       // 播放默认的频道
       emit(getDefaultChannelModel())
     }
@@ -170,7 +185,8 @@ class MainViewModel : ViewModel() {
    */
   private suspend fun init() = withContext(Dispatchers.IO) {
     // 读取网络上的配置文件
-    val liveContent = NetworkUtils.getResponseBodyCache(LIVE_CONFIG_URL, "lives/live-2026-03-19.jsonc")
+    val liveContent =
+      NetworkUtils.getResponseBodyCache(LIVE_CONFIG_URL, "lives/live-2026-03-19.jsonc")
     // Log.i(TAG, "liveContent: $liveContent")
     // 反序列化赋值给 liveModel 对象
     _liveModel = json.decodeFromString<LiveModel>(liveContent)
@@ -314,7 +330,7 @@ class MainViewModel : ViewModel() {
       it.args = model.args
       _currentChannelPlayer.value = "" // 清空当前播放器
       _currentChannelPlayer.value = model.player // 设置当前播放器
-      Log.i(TAG, "currentChannelModel: $it")
+      Timber.i("currentChannelModel: $it")
     }
   }
 
@@ -387,6 +403,24 @@ class MainViewModel : ViewModel() {
   }
 
   /**
+   * 切换到下一个源
+   *
+   * @param showNullToast 是否显示没有源的提示
+   * @return true 切换成功，false 切换失败
+   */
+  fun nextSource(showNullToast: Boolean = true): Boolean {
+    val name = right()
+    Timber.i("nextSource: $name")
+    if (name != null) {
+      "已切换到源【$name】".showToast(Toast.LENGTH_LONG)
+      return true
+    } else if (showNullToast) {
+      "当前频道只有一个源".showToast(Toast.LENGTH_LONG)
+    }
+    return false
+  }
+
+  /**
    * 切台追加输入数字
    */
   fun appendNumber(number: String) {
@@ -412,5 +446,70 @@ class MainViewModel : ViewModel() {
    */
   fun showActions(show: Boolean = true) {
     _showActions.value = show
+  }
+
+  /**
+   * 收藏或取消收藏频道
+   */
+  fun favoriteOrUnFavorite(
+    channelModel: LiveChannelModel? = currentChannelModel.value,
+    callback: (() -> Unit)? = null
+  ) {
+    channelModel ?: return
+    viewModelScope.launch {
+      val isFavorite = withContext(Dispatchers.IO) {
+        val foundChannelModel = LitePal.where(
+          "channelName = ? and channelType = ?",
+          channelModel.channelName,
+          channelModel.channelType
+        )
+          .findFirst<LiveChannelModel>()
+        Timber.i("foundChannelModel: $foundChannelModel")
+        if (foundChannelModel == null) {
+          Timber.i("收藏: $channelModel")
+          channelModel.copy().save()
+        } else {
+          Timber.i("取消收藏: $channelModel")
+          handleUnFavorite(foundChannelModel)
+          false
+        }
+      }
+      callback?.invoke()
+      Timber.i("收藏结果: ${channelModel.channelName} ${if (isFavorite) "已收藏" else "已取消收藏"}")
+      (channelModel.channelName + if (isFavorite) "已收藏" else "已取消收藏").showToast()
+    }
+  }
+
+  suspend fun handleUnFavorite(channelModel: LiveChannelModel) {
+    withContext(Dispatchers.IO) {
+      LitePal.deleteAll<LiveChannelModel>(
+        "channelName = ? and channelType = ?",
+        channelModel.channelName,
+        channelModel.channelType
+      )
+    }
+  }
+
+  /**
+   * 取消收藏指定频道
+   */
+  fun unFavorite(channelModel: LiveChannelModel? = currentChannelModel.value) {
+    channelModel ?: return
+    viewModelScope.launch {
+      handleUnFavorite(channelModel)
+      "${channelModel.channelName}已取消收藏".showToast()
+    }
+  }
+
+  fun clearFavoriteChannelList() {
+    _favoriteChannelModelList.value = null
+  }
+
+  fun getFavoriteChannelList() {
+    viewModelScope.launch {
+      _favoriteChannelModelList.value = withContext(Dispatchers.IO) {
+        LitePal.findAll<LiveChannelModel>().sortedBy { it.number }
+      }
+    }
   }
 }

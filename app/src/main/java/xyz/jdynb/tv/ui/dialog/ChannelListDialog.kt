@@ -1,8 +1,7 @@
-package xyz.jdynb.tv.dialog
+package xyz.jdynb.tv.ui.dialog
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -11,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.drake.brv.annotaion.DividerOrientation
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.divider
@@ -22,7 +22,6 @@ import com.drake.engine.base.EngineDialog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import xyz.jdynb.tv.MainViewModel
 import xyz.jdynb.tv.R
 import xyz.jdynb.tv.constants.SPKeyConstants
@@ -52,6 +51,8 @@ class ChannelListDialog(
 
   private var job: Job? = null
 
+  private var beforeSelectedIndex = -1
+
   var onRefreshListener: (() -> Unit)? = null
 
   var onSwitchSourceListener: (() -> Unit)? = null
@@ -73,13 +74,37 @@ class ChannelListDialog(
         dismiss()
         return true
       }
+
+      // 再次按菜单键进行收藏取消收藏操作
+      KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_M -> {
+        val checkedPosition = getCheckedPosition()
+        if (checkedPosition == -1) {
+          return super.onKeyDown(keyCode, event)
+        }
+        // 获取焦点的频道
+        val models = binding.rvChannel.models
+        if (models.isNullOrEmpty()) {
+          return super.onKeyDown(keyCode, event)
+        }
+        val model = models.getOrNull(checkedPosition) as? LiveChannelModel ?: return super.onKeyDown(keyCode, event)
+        mainViewModel.favoriteOrUnFavorite(model) {
+          if (binding.rvGroup.bindingAdapter.checkedCount == 0) {
+            mainViewModel.getFavoriteChannelList()
+          }
+        }
+        return true
+      }
     }
     return super.onKeyDown(keyCode, event)
   }
 
   override fun onStart() {
     super.onStart()
-    Log.i(TAG, "onStart")
+
+    if (binding.rvGroup.bindingAdapter.checkedCount == 0) {
+      mainViewModel.getFavoriteChannelList()
+    }
+
     if (!isTv(context)) {
       binding.tvTips.isVisible = false
       return
@@ -101,7 +126,6 @@ class ChannelListDialog(
 
   override fun onStop() {
     super.onStop()
-    Log.i(TAG, "onStop")
     job?.cancel()
   }
 
@@ -129,6 +153,15 @@ class ChannelListDialog(
         mainViewModel.changeCurrentIndex(model)
         dismiss()
       }
+
+      R.id.tv_channel.onLongClick {
+        val model = getModel<LiveChannelModel>()
+        mainViewModel.favoriteOrUnFavorite(model) {
+          if (binding.rvGroup.bindingAdapter.checkedCount == 0) {
+            mainViewModel.getFavoriteChannelList()
+          }
+        }
+      }
     }
 
     binding.rvGroup.dividerSpace(10).setup {
@@ -149,9 +182,12 @@ class ChannelListDialog(
         val model = getModel<LiveChannelTypeModel>(position)
         model.isSelected = checked
 
-        if (binding.rvChannel.isComputingLayout) {
+        mainViewModel.clearFavoriteChannelList()
+
+        if (binding.rvChannel.isComputingLayout || !checked) {
           return@onChecked
         }
+        binding.btnFavorite.isSelected = false
         binding.rvChannel.models = model.channelList.onEach { it.isSelected = false }
         if (mainViewModel.currentChannelType.value == model.channelType) {
           val checkedPosition = model.channelList.indexOfFirst {
@@ -189,6 +225,20 @@ class ChannelListDialog(
       }
     }
 
+    binding.btnFavorite.setOnClickListener {
+      val bindingAdapter = binding.rvGroup.bindingAdapter
+      if (bindingAdapter.checkedCount > 0) {
+        bindingAdapter.setChecked(bindingAdapter.checkedPosition[0], false)
+      }
+      mainViewModel.getFavoriteChannelList()
+    }
+
+    /*binding.btnFavorite.onFocusChangeListener = View.OnFocusChangeListener { p0, hasFocus ->
+      if (hasFocus) {
+        binding.btnFavorite.callOnClick()
+      }
+    }*/
+
     // 返回
     binding.btnBack.setOnClickListener {
       dismiss()
@@ -197,13 +247,6 @@ class ChannelListDialog(
     binding.btnRefresh.setOnClickListener {
       onRefreshListener?.invoke()
     }
-
-    // 检查更新
-    /*binding.btnUpdate.setOnClickListener {
-      activity.lifecycleScope.launch {
-        UpdateUtils.checkUpdate(context)
-      }
-    }*/
 
     binding.btnSearch.setOnClickListener {
       dismiss()
@@ -246,6 +289,49 @@ class ChannelListDialog(
         binding.rvGroup.bindingAdapter.setChecked(checkedPosition, true)
       }
     }
+
+    activity.lifecycleScope.launch {
+      mainViewModel.favoriteChannelModelList.collect {
+        it ?: return@collect
+        if (binding.rvChannel.isComputingLayout) {
+          return@collect
+        }
+
+        var checkedPosition = getCheckedPosition()
+
+        binding.rvChannel.models = it
+        binding.btnFavorite.isSelected = true
+        if (it.isEmpty()) {
+          return@collect
+        }
+        if (checkedPosition == -1) {
+          checkedPosition = it.indexOfFirst { model -> mainViewModel.currentChannelModel.value == model }
+          if (checkedPosition == -1) {
+            return@collect
+          }
+        }
+        if (checkedPosition !in 0 until it.size) {
+          return@collect
+        }
+        binding.rvChannel.bindingAdapter.setChecked(checkedPosition, true)
+        binding.rvChannel.post {
+          binding.rvChannel.getChildAt(checkedPosition).requestFocus()
+          binding.rvChannel.scrollToPosition(checkedPosition)
+        }
+      }
+    }
+  }
+
+  private fun getCheckedPosition(): Int {
+    val view = window?.currentFocus ?: return -1
+    val parentView = view.parent
+    if (parentView is RecyclerView) {
+      val parentId = parentView.id
+      if (parentId == R.id.rv_channel) {
+        return parentView.indexOfChild(view)
+      }
+    }
+    return -1
   }
 
 }

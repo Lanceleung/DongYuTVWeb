@@ -10,6 +10,12 @@
             videoDiv.style['z-index'] = 99999
             videoDiv.style.width = `100vw`
             videoDiv.style.height = `100vh`
+
+            videoDiv.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
             return
         }
 

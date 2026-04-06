@@ -18,6 +18,13 @@
             videoDiv.style.height = `${scale * 570}px`*/
             videoDiv.style.width = '100vw'
             videoDiv.style.height = '100vh'
+            const video = videoDiv.querySelector('video')
+            if (video) {
+                video.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
             return
         }
 

@@ -10,6 +10,12 @@
             videoDiv.style.width = `100vw`
             videoDiv.style.height = `100vh`
             document.querySelector('video').play()
+
+            videoDiv.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
             return
         }
 
