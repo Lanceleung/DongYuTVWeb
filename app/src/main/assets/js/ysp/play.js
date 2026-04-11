@@ -10,8 +10,8 @@
         live.videoConfig.pid = '{{pid}}'
         live.videoConfig.vid = '{{streamId}}'
         console.log('videoConfig: pid=' + live.videoConfig.pid + "vid=" + live.videoConfig.vid)
-        if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
-            JSBridge.hideLoading()
-        }
+        // if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+        //     JSBridge.hideLoading()
+        // }
     }
 })();

@@ -94,10 +94,15 @@ async function clear() {
             // live.videoConfig.vid = '{{streamId}}'
             console.log('init videoConfig: pid=' + live.videoConfig.pid + "vid=" + live.videoConfig.vid)
         }
-        if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
-            JSBridge.hideLoading()
+        const video = document.querySelector('video')
+        if (video) {
+            video.addEventListener('playing', function() {
+                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                    JSBridge.hideLoading()
+                }
+            })
         }
-        console.log('player:' + player)
+        // console.log('player:' + player)
         player.style.position = 'fixed'
         player.style.left = 0
         player.style.top = 0

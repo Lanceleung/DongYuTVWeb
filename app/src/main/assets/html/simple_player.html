@@ -44,6 +44,8 @@
 </body>
 
 <script>
+    let playTimerId = null;
+
     const video = document.querySelector("#video")
 
     video.addEventListener('playing', function() {
@@ -55,6 +57,11 @@
         loading.style.display = 'none';
         if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
             JSBridge.hideLoading()
+        }
+
+        if (playTimerId) {
+            clearTimeout(playTimerId)
+            playTimerId = null
         }
     }
 
@@ -81,6 +88,14 @@
         video.volume = 1
         console.log('liveUrl:', url)
         window.currentLiveUrl = url
+
+        if (playTimerId) {
+            clearTimeout(playTimerId)
+        }
+
+        setTimeout(function() {
+            hideLoading()
+        }, 15 * 1000); // 15秒超时时间
 
         // 显示加载动画
         if (typeof JSBridge !== 'undefined' && JSBridge.showLoading) {
