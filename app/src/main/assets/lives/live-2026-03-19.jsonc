@@ -341,6 +341,42 @@
           "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/ningbo/play.js"
         ]
       }
+    },
+    {
+      "id": "hainan",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hainan/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/hainan/play.js"
+        ]
+      }
+    },
+    {
+      "id": "yunnan",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/yunnan/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/yunnan/init.js"
+        ]
+      }
+    },
+    {
+      "id": "haerbin",
+      "name": "simple",
+      "script": {
+        "init": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/haerbin/init.js"
+        ],
+        "play": [
+          "https://gitee.com/jdy2002/DongYuTvWeb/raw/master/app/src/main/assets/js/haerbin/play.js"
+        ]
+      }
     }
   ],
   // 播放频道列表
@@ -1139,10 +1175,23 @@
         {
           "channelName": "海南卫视",
           "tvLogo": "https://resources.yangshipin.cn/assets/oms/image/202306/6e060391fde0469801fc3d84dbf204b4f8d650d251f17d7595a6964c0bb99e81.png?imageMogr2/format/webp",
-          "args": {
-            "pid": "600002506",
-            "streamId": "2024055603"
-          }
+          "children": [
+            {
+              "channelName": "海南卫视-1",
+              "player": "ysp",
+              "args": {
+                "pid": "600002506",
+                "streamId": "2024055603"
+              }
+            },
+            {
+              "channelName": "海南卫视-2",
+              "player": "hainan",
+              "args": {
+                "id": "STHaiNan_channel_lywsgq"
+              }
+            }
+          ]
         },
         {
           "channelName": "重庆卫视",
@@ -1367,10 +1416,23 @@
         {
           "channelName": "云南卫视",
           "tvLogo": "https://resources.yangshipin.cn/assets/oms/image/202411/907600c544719ffdaa6b6fa177d91b530dc9ce38e3dfd43a14ea7c805a7df97d.png?imageMogr2/format/webp",
-          "args": {
-            "pid": "600190402",
-            "streamId": "2025561303"
-          }
+          "children": [
+            {
+              "channelName": "云南卫视-高清",
+              "player": "ysp",
+              "args": {
+                "pid": "600190402",
+                "streamId": "2025561303"
+              }
+            },
+            {
+              "channelName": "云南卫视-2",
+              "player": "yunnan",
+              "args": {
+                "id": "yunnanweishi"
+              }
+            }
+          ]
         },
         {
           "channelName": "山西卫视",
@@ -2497,6 +2559,96 @@
       ]
     },
     {
+      "channelType": "海南",
+      "player": "hainan",
+      "channelList": [
+        {
+          "channelName": "三沙卫视",
+          "args": {
+            "id": "STHaiNan_channel_ssws"
+          }
+        },
+        {
+          "channelName": "海南自贸",
+          "args": {
+            "id": "jjpd"
+          }
+        },
+        {
+          "channelName": "海南新闻",
+          "args": {
+            "id": "STHaiNan_channel_xwpd"
+          }
+        },
+        {
+          "channelName": "海南社会与法",
+          "args": {
+            "id": "ggpd"
+          }
+        },
+        {
+          "channelName": "海南文旅",
+          "args": {
+            "id": "wlpd"
+          }
+        },
+        {
+          "channelName": "海南少儿",
+          "args": {
+            "id": "sepd"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "云南",
+      "player": "yunnan",
+      "channelList": [
+        {
+          "channelName": "云南都市",
+          "args": {
+            "id": "yunnandushi"
+          }
+        },
+        {
+          "channelName": "康旅频道",
+          "args": {
+            "id": "yunnangonggong"
+          }
+        },
+        {
+          "channelName": "澜湄国际",
+          "args": {
+            "id": "yunnanguoji"
+          }
+        }
+      ]
+    },
+    {
+      "channelType": "哈尔滨",
+      "player": "haerbin",
+      "channelList": [
+        {
+          "channelName": "影视频道",
+          "args": {
+            "id": "5"
+          }
+        },
+        {
+          "channelName": "新闻综合",
+          "args": {
+            "id": "3"
+          }
+        },
+        {
+          "channelName": "生活频道",
+          "args": {
+            "id": "7"
+          }
+        }
+      ]
+    },
+    {
       "channelType": "地方",
       "channelList": [
         {
@@ -2641,6 +2793,62 @@
           "desc": "宁波",
           "args": {
             "id": "nbtv4_md"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "湛江新闻综合",
+          "desc": "广东湛江",
+          "args": {
+            "liveUrl": "http://gbtv-rtmp-self.zjwtv.com/zjtv/zhpd.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "湛江公共",
+          "desc": "广东湛江",
+          "args": {
+            "liveUrl": "http://gbtv-rtmp-self.zjwtv.com/zjtv/ggpd.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "吉安综合",
+          "desc": "江西吉安",
+          "args": {
+            "liveUrl": "https://play.jarmt.cn/live/c3756d7171c348539cb9598232390460.m3u8"
+          }
+        },
+        {
+          "player": "common",
+          "channelName": "吉安公共",
+          "desc": "江西吉安",
+          "args": {
+            "liveUrl": "https://play.jarmt.cn/live/b7431049d491429db72abcad0422f98c.m3u8"
+          }
+        },
+        {
+          "player": "hunan",
+          "channelName": "快乐垂钓",
+          "desc": "湖南",
+          "args": {
+            "id": "218"
+          }
+        },
+        {
+          "player": "hunan",
+          "channelName": "长沙新闻综合",
+          "desc": "湖南长沙",
+          "args": {
+            "id": "269"
+          }
+        },
+        {
+          "player": "hunan",
+          "channelName": "长沙政法",
+          "desc": "湖南长沙",
+          "args": {
+            "id": "254"
           }
         }
       ]
