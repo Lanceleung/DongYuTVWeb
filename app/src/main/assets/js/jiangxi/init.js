@@ -32,6 +32,7 @@
             fullscreen()
         }, 12)
     }
+  }
 
     fullscreen()
 })();

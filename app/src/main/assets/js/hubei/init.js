@@ -9,13 +9,15 @@
             videoDiv.style['z-index'] = 99999
             videoDiv.style.width = `100vw`
             videoDiv.style.height = `100vh`
-            document.querySelector('video').play()
-
-            videoDiv.addEventListener('playing', function() {
-                if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
-                    JSBridge.hideLoading()
-                }
-            })
+            const video = videoDiv.querySelector('video')
+            if (video) {
+                video.play()
+                 video.addEventListener('playing', function() {
+                    if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+                        JSBridge.hideLoading()
+                    }
+                })
+            }
             return
         }
 
