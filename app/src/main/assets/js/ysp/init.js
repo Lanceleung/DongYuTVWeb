@@ -1,3 +1,7 @@
+if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
+    JSBridge.hideLoading()
+}
+
 async function initLivePlayer() {
     let live = window.livePlayerInstance
     let flag = true
@@ -100,9 +104,6 @@ async function clear() {
 
             })
         }*/
-        if (typeof JSBridge !== 'undefined' && JSBridge.hideLoading) {
-            JSBridge.hideLoading()
-        }
         // console.log('player:' + player)
         player.style.position = 'fixed'
         player.style.left = 0
