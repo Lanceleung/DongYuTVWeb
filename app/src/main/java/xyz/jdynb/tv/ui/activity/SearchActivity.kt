@@ -31,6 +31,7 @@ import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivitySearchBinding
 import xyz.jdynb.tv.ui.dialog.SettingDialog
 import xyz.jdynb.tv.ui.dialog.UserAuthDialog
+import xyz.jdynb.tv.ui.dialog.VideoHistoryDialog
 import xyz.jdynb.tv.utils.NetworkUtils
 import xyz.jdynb.tv.utils.UpdateUtils
 import java.util.concurrent.atomic.AtomicBoolean
@@ -103,6 +104,10 @@ class SearchActivity : EngineActivity<ActivitySearchBinding>(R.layout.activity_s
 
       R.id.btn_clear -> {
         binding.tvKeyword.text = ""
+      }
+
+      R.id.btn_history -> {
+        VideoHistoryDialog(this).show()
       }
     }
   }

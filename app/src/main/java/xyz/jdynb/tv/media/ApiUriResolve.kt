@@ -6,6 +6,9 @@ import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.ResolvingDataSource
 import xyz.jdynb.tv.utils.ParseUtils
 
+/**
+ * 解析影视API
+ */
 @UnstableApi
 class ApiUriResolve : ResolvingDataSource.Resolver {
 

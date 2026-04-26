@@ -137,6 +137,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <Button
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_margin="6dp"
+                android:text="自定义频道"
+                android:id="@+id/btn_custom_channel"
+                android:textSize="19sp"
+                android:layout_gravity="fill"
+                android:background="@drawable/bg_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
         </GridLayout>
 
     </ScrollView>

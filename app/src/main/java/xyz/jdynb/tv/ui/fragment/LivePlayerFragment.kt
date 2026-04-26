@@ -19,9 +19,11 @@ import com.tencent.smtt.export.external.interfaces.WebResourceResponse
 import com.tencent.smtt.sdk.WebChromeClient
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import xyz.jdynb.tv.MainActivity
 import xyz.jdynb.tv.MainViewModel
@@ -222,9 +224,12 @@ abstract class LivePlayerFragment : Fragment(), Playable {
   /**
    * 执行 JS 脚本
    */
-  fun execJs(jsType: JsType, vararg args: Pair<String, Any?>) {
+  fun execJs(jsType: JsType, vararg args: Pair<String, Any?>, callback: (() -> Unit)? = null) {
     viewLifecycleOwner.lifecycleScope.launch {
       webView.execJs(playerConfig, jsType, *args)
+      withContext(Dispatchers.Main) {
+        callback?.invoke()
+      }
     }
   }
 

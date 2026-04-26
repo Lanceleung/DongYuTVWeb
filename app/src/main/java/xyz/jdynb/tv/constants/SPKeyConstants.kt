@@ -124,6 +124,12 @@ class SPKeyConstants {
      * 播放超时时间
      */
     const val PLAY_TIMEOUT_DURATION = "play_timeout_duration"
+
+    /**
+     * 频道配置URL
+     * @see xyz.jdynb.tv.model.LiveModel
+     */
+    const val CHANNEL_CONFIG_URL = "channel_url"
   }
 
 }

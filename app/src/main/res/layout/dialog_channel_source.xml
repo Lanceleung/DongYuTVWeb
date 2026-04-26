@@ -74,13 +74,25 @@
                     android:textAllCaps="false"
                     android:textColor="@color/tv_select" />
 
+                <Button
+                    android:id="@+id/btn_time_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_select"
+                    android:focusable="true"
+                    android:text="15秒"
+                    android:textAllCaps="false"
+                    android:textColor="@color/tv_select" />
+
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="上下选择,Ok(确认)键修改,左右方向键快速换源" />
+                android:gravity="center_horizontal"
+                android:text="上下选择,Ok(确认)键修改,左右方向键快速换源\n老设备自动换源时间建议设置长一点" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_type"

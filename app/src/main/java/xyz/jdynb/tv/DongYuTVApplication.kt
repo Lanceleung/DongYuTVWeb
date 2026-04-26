@@ -25,6 +25,7 @@ class DongYuTVApplication : Application() {
     lateinit var context: Context
 
     @OptIn(UnstableApi::class)
+    @UnstableApi
     lateinit var cache: SimpleCache
   }
 

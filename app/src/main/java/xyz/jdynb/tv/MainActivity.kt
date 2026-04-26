@@ -4,21 +4,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
-import android.util.Log
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
@@ -26,41 +20,50 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.drake.engine.base.EngineActivity
 import com.drake.engine.utils.NetworkUtils
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import xyz.jdynb.tv.base.BaseKeyEventActivity
 import xyz.jdynb.tv.constants.SPKeyConstants
 import xyz.jdynb.tv.databinding.ActivityMainBinding
+import xyz.jdynb.tv.ui.activity.SearchActivity
 import xyz.jdynb.tv.ui.dialog.ChannelListDialog
 import xyz.jdynb.tv.ui.dialog.ChannelSourceDialog
 import xyz.jdynb.tv.ui.dialog.SettingDialog
-import xyz.jdynb.tv.ui.activity.SearchActivity
 import xyz.jdynb.tv.ui.fragment.LivePlayerFragment
+import xyz.jdynb.tv.utils.SlideTouchHelper
 import xyz.jdynb.tv.utils.SpUtils.getRequired
 import xyz.jdynb.tv.utils.UpdateUtils
-import kotlin.system.exitProcess
 
-class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main) {
-
-  companion object {
-
-    private const val TAG = "MainActivity"
-
-    private const val SLIDE_DISTANCE = 200
-
-    private const val SLIDE_THRESHOLD = 100
-  }
+/**
+ * 主页面
+ *
+ * @author Yu2002s
+ */
+class MainActivity : BaseKeyEventActivity<ActivityMainBinding>(R.layout.activity_main), SlideTouchHelper.OnSlideListener {
 
   /**
    * 当前显示的 LivePlayerFragment
    */
   private var livePlayerFragment: LivePlayerFragment? = null
 
+  /**
+   * 频道列表对话框
+   */
   private lateinit var channelListDialog: ChannelListDialog
 
+  /**
+   * 主ViewModel
+   */
   private val mainViewModel by viewModels<MainViewModel>()
 
-  private lateinit var audioManager: AudioManager
+  /**
+   * 滑动切换频道的帮助类
+   */
+  private val slideTouchHelper by lazy {
+    SlideTouchHelper(binding.fragment)
+  }
 
   /**
    * 唤醒锁，用于防止设备进入休眠状态导致断网
@@ -87,10 +90,19 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
    */
   private val networkReceiver = NetworkBoardReceiver()
 
+  /**
+   * 处理菜单键点击的 Handler
+   */
   private val handler = Handler(Looper.getMainLooper())
 
+  /**
+   * 最后一次点击菜单键的时间
+   */
   private var lastMenuClickTime = 0L
 
+  /**
+   * 点击菜单键的 Runnable
+   */
   private val menuClickRunnable = Runnable {
     if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
       SettingDialog(this, mainViewModel).show()
@@ -99,52 +111,149 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     }
   }
 
+  /**
+   * 初始化
+   */
   override fun init() {
     super.init()
-    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-    insetsController.systemBarsBehavior =
-      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    insetsController.hide(WindowInsetsCompat.Type.systemBars())
+    // 初始化窗口
+    initWindow()
 
-    // 强制显示鼠标指针，解决电视上插入鼠标后不显示的问题
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      window.decorView.requestPointerCapture()
-    }
-
-    audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-
+    // 获取当前网络连接状态
     isNetworkConnected = NetworkUtils.isConnected()
 
+    // 检查网络连接状态
+    checkNetworkConnection()
     // 注册网络状态广播接收器
     registerNetworkReceiver()
-
     // 获取唤醒锁，防止设备休眠导致断网
     acquireWakeLock()
     // 获取 WiFi 锁，保持 WiFi 连接
     acquireWifiLock()
+    // 设置滑动切换频道的监听器
+    slideTouchHelper.onSlideListener = this
   }
 
-  /**
-   * 注册网络状态广播接收器
-   */
-  @Suppress("DEPRECATION")
-  private fun registerNetworkReceiver() {
-    val filter = IntentFilter().apply {
-      addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-    }
-    registerReceiver(networkReceiver, filter)
+  override fun onSlideChange(x: Float, y: Float) {
+    // 根据滑动距离计算透明度
   }
 
-  /**
-   * 注销网络状态广播接收器
-   */
-  private fun unregisterNetworkReceiver() {
-    try {
-      unregisterReceiver(networkReceiver)
-    } catch (_: IllegalArgumentException) {
-      //接器未注册时会抛出异常，忽略
+  override fun onSlided(direction: SlideTouchHelper.SlideDirection) {
+    when (direction) {
+      SlideTouchHelper.SlideDirection.Left -> {
+        val channelName = mainViewModel.right()
+        if (channelName != null) {
+          Toast.makeText(this@MainActivity, "已切换到：$channelName", Toast.LENGTH_SHORT)
+            .show()
+        } else {
+          Toast.makeText(this@MainActivity, "只有一个源", Toast.LENGTH_SHORT).show()
+        }
+      }
+
+      SlideTouchHelper.SlideDirection.Up -> {
+        mainViewModel.enableDebounce = false
+        binding.btnLeft.callOnClick()
+      }
+
+      SlideTouchHelper.SlideDirection.Right -> {
+        val channelName = mainViewModel.left()
+        if (channelName != null) {
+          Toast.makeText(this@MainActivity, "已切换到：$channelName", Toast.LENGTH_SHORT)
+            .show()
+        } else {
+          Toast.makeText(this@MainActivity, "只有一个源", Toast.LENGTH_SHORT).show()
+        }
+      }
+
+      SlideTouchHelper.SlideDirection.Down -> {
+        mainViewModel.enableDebounce = false
+        binding.btnRight.callOnClick()
+      }
     }
+  }
+
+  override fun onDPadLeft(): Boolean {
+    if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
+      volumeDown()
+    } else {
+      val source = mainViewModel.left()
+      if (source == null) {
+        Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+        return true
+      }
+      Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
+      return true
+    }
+    return super.onDPadLeft()
+  }
+
+  override fun onDPadUp(): Boolean {
+    if (SPKeyConstants.REVERSE_DIRECTION.getRequired(false)) {
+      mainViewModel.down()
+    } else {
+      mainViewModel.up()
+    }
+    return super.onDPadUp()
+  }
+
+  override fun onDPadDown(): Boolean {
+    if (SPKeyConstants.REVERSE_DIRECTION.getRequired(false)) {
+      mainViewModel.up()
+    } else {
+      mainViewModel.down()
+    }
+    return super.onDPadDown()
+  }
+
+  override fun onDPadRight(): Boolean {
+    if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
+      volumeUp()
+    } else {
+      val source = mainViewModel.right()
+      if (source == null) {
+        Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+        return true
+      }
+      Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
+      return true
+    }
+    return super.onDPadRight()
+  }
+
+  override fun onOk(): Boolean {
+    if (isLongPress) {
+      mainViewModel.favoriteOrUnFavorite()
+      return true
+    }
+    if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
+      binding.btnMenu.callOnClick()
+    } else {
+      livePlayerFragment?.resumeOrPause()
+    }
+    return super.onOk()
+  }
+
+  override fun onMenu(): Boolean {
+    val now = System.currentTimeMillis()
+
+    if (now - lastMenuClickTime < 500) {
+      handler.removeCallbacks(menuClickRunnable)
+      val channelName = mainViewModel.right()
+      if (channelName != null) {
+        Toast.makeText(this, "已切换到: $channelName", Toast.LENGTH_SHORT).show()
+      } else {
+        Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
+      }
+    } else {
+      handler.postDelayed(menuClickRunnable, 500)
+      lastMenuClickTime = now
+    }
+    return super.onMenu()
+  }
+
+  override fun onNumber(number: String): Boolean {
+    mainViewModel.appendNumber(number)
+    return super.onNumber(number)
   }
 
   override fun initView() {
@@ -163,9 +272,9 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
   }
 
   override fun initData() {
+    // 监听当前频道播放器变化
     lifecycleScope.launch {
       mainViewModel.currentChannelPlayer.collect {
-        Log.i(TAG, "currentChannelPlayer: $it")
         if (it.isEmpty()) {
           return@collect
         }
@@ -173,26 +282,17 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
       }
     }
 
+    // 检查更新
     if (SPKeyConstants.CHECK_UPDATE.getRequired<Boolean>(true)) {
       lifecycleScope.launch {
         UpdateUtils.checkUpdate(this@MainActivity, showToast = false, showDialog = false)
       }
     }
-
-    /*if (SPKeyConstants.RENAME_APP_TIPS.getRequired<Boolean>(true)) {
-      TipsDialog(
-        this, TipsModel("App变更提示", "已更新为新App【我的电视】，旧App可删除"), 15 * 1000L,
-        Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-      ).apply {
-        setOnDismissListener {
-          SPKeyConstants.RENAME_APP_TIPS.put(false)
-        }
-        setCancelable(false)
-        show()
-      }
-    }*/
   }
 
+  /**
+   * 刷新 LiveFragment
+   */
   fun refreshFragment() {
     handleChannelPlayerChange()
   }
@@ -215,7 +315,6 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     val fragmentClazz = mainViewModel
       .getFragmentClassForChannel(mainViewModel.currentChannelModel.value!!)
       ?: return
-    Log.i(TAG, "showFragment: $fragmentClazz")
 
     showFragment(fragmentClazz)
   }
@@ -245,10 +344,6 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     }
   }
 
-  fun switchLiveSource() {
-    mainViewModel.right()
-  }
-
   /**
    * 显示指定的 Fragment
    *
@@ -261,6 +356,10 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     livePlayerFragment = target
     transaction.replace(R.id.fragment, target, tag)
     transaction.commitAllowingStateLoss()
+
+    if (binding.loading.isVisible) {
+      binding.loading.isVisible = false
+    }
   }
 
   /**
@@ -310,414 +409,20 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         chooseLiveSource()
       }
 
+      // 退出
       R.id.btn_exit -> {
         handleBackPress()
       }
     }
   }
 
-  private var downY = 0f
-  private var downX = 0f
-  private var moveY = 0f
-  private var moveX = 0f
-  private var isSliding = false
-  private var slideDirection: String? = null // "vertical" 或 "horizontal"
-
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
     mainViewModel.showActions()
     if (!SPKeyConstants.SLIDE_SWITCH_CHANNEL.getRequired<Boolean>(false)) {
       return super.dispatchTouchEvent(event)
     }
-    when (event.action) {
-      MotionEvent.ACTION_DOWN -> {
-        downY = event.y
-        downX = event.x
-        moveY = 0f
-        moveX = 0f
-        isSliding = false
-        slideDirection = null
-      }
-
-      MotionEvent.ACTION_MOVE -> {
-        val currentMoveX = event.x - downX
-        val currentMoveY = event.y - downY
-
-        // 如果还未锁定方向，判断是否达到滑动阈值
-        if (!isSliding) {
-          val absMoveX = kotlin.math.abs(currentMoveX)
-          val absMoveY = kotlin.math.abs(currentMoveY)
-
-          // 当任一方向达到阈值时，锁定滑动方向
-          if (absMoveX > SLIDE_THRESHOLD || absMoveY > SLIDE_THRESHOLD) {
-            isSliding = true
-            // 哪个方向的绝对值大就锁定哪个方向
-            slideDirection = if (absMoveY > absMoveX) "vertical" else "horizontal"
-            Log.i(TAG, "锁定滑动方向：$slideDirection, moveX: $currentMoveX, moveY: $currentMoveY")
-          }
-        }
-
-        // 根据锁定的方向更新位移
-        if (isSliding) {
-          when (slideDirection) {
-            "vertical" -> {
-              // 垂直滑动：只更新 Y 轴
-              moveY = currentMoveY
-              moveX = 0f
-              binding.fragment.translationY = moveY
-              binding.fragment.translationX = 0f
-            }
-
-            "horizontal" -> {
-              // 水平滑动：只更新 X 轴
-              moveX = currentMoveX
-              moveY = 0f
-              binding.fragment.translationX = moveX
-              binding.fragment.translationY = 0f
-            }
-          }
-          Log.i(TAG, "滑动中 - 方向：$slideDirection, moveY: $moveY, moveX: $moveX")
-        }
-      }
-
-      MotionEvent.ACTION_UP -> {
-        if (isSliding) {
-          // 根据锁定的方向执行对应操作
-          when (slideDirection) {
-            "vertical" -> {
-              // 垂直滑动
-              if (moveY > SLIDE_DISTANCE) {
-                mainViewModel.enableDebounce = false
-                binding.btnRight.callOnClick()
-                // 下滑 - 触发右侧按钮（下一个频道）
-                performSlideAnimation("down") {
-
-                }
-              } else if (moveY < -SLIDE_DISTANCE) {
-                mainViewModel.enableDebounce = false
-                binding.btnLeft.callOnClick()
-                // 上滑 - 触发左侧按钮（上一个频道）
-                performSlideAnimation("up") {}
-              } else {
-                // 滑动距离不足，恢复原位
-                restoreFragmentPosition()
-              }
-            }
-
-            "horizontal" -> {
-              // 水平滑动
-              if (moveX > SLIDE_DISTANCE) {
-                // 右滑 - 左方向操作
-                performSlideAnimation("right") {
-                  val channelName = mainViewModel.left()
-                  if (channelName != null) {
-                    Toast.makeText(this@MainActivity, "已切换到：$channelName", Toast.LENGTH_SHORT)
-                      .show()
-                  } else {
-                    Toast.makeText(this@MainActivity, "只有一个源", Toast.LENGTH_SHORT).show()
-                  }
-                }
-              } else if (moveX < -SLIDE_DISTANCE) {
-                // 左滑 - 右方向操作
-                performSlideAnimation("left") {
-                  val channelName = mainViewModel.right()
-                  if (channelName != null) {
-                    Toast.makeText(this@MainActivity, "已切换到：$channelName", Toast.LENGTH_SHORT)
-                      .show()
-                  } else {
-                    Toast.makeText(this@MainActivity, "只有一个源", Toast.LENGTH_SHORT).show()
-                  }
-                }
-              } else {
-                // 滑动距离不足，恢复原位
-                restoreFragmentPosition()
-              }
-            }
-          }
-        } else {
-          // 未达到滑动阈值，视为点击事件，不处理
-          restoreFragmentPosition()
-        }
-      }
-
-      MotionEvent.ACTION_CANCEL -> {
-        restoreFragmentPosition()
-        isSliding = false
-        slideDirection = null
-      }
-    }
+    slideTouchHelper.onTouchEvent(event)
     return super.dispatchTouchEvent(event)
-  }
-
-  /**
-   * 执行滑动动画
-   *
-   * @param direction "up" | "down" | "left" | "right" 滑动方向
-   * @param onComplete 动画中途（彻底滑出后）执行的回调，用于切换内容
-   */
-  private fun performSlideAnimation(direction: String, onComplete: () -> Unit) {
-    val fragmentWidth = binding.fragment.width.toFloat()
-    val fragmentHeight = binding.fragment.height.toFloat()
-
-    var endX = 0f
-    var endY = 0f
-    var enterX = 0f
-    var enterY = 0f
-
-    when (direction) {
-      "up" -> {
-        endY = -fragmentHeight
-        enterY = fragmentHeight
-      }
-
-      "down" -> {
-        endY = fragmentHeight
-        enterY = -fragmentHeight
-      }
-
-      "left" -> {
-        endX = -fragmentWidth
-        enterX = fragmentWidth
-      }
-
-      "right" -> {
-        endX = fragmentWidth
-        enterX = -fragmentWidth
-      }
-
-      else -> return
-    }
-
-    // 第一阶段：平稳滑出
-    binding.fragment.animate()
-      .translationX(endX)
-      .translationY(endY)
-      .alpha(0.3f)
-      .setDuration(250)
-      .setInterpolator(AccelerateInterpolator())
-      .withEndAction {
-        // 在彻底滑出后执行内容切换
-        onComplete()
-
-        // 移到另一侧准备滑入
-        binding.fragment.translationX = enterX
-        binding.fragment.translationY = enterY
-
-        // 第二阶段：平稳滑入
-        binding.fragment.animate()
-          .translationX(0f)
-          .translationY(0f)
-          .alpha(1f)
-          .setDuration(300)
-          .setInterpolator(DecelerateInterpolator())
-          .start()
-      }
-      .start()
-  }
-
-  /**
-   * 恢复 Fragment 到原始位置（用于滑动距离不足时）
-   */
-  private fun restoreFragmentPosition() {
-    binding.fragment.animate()
-      .translationX(0f)
-      .translationY(0f)
-      .alpha(1f)
-      .setDuration(400)
-      .setInterpolator(OvershootInterpolator(1.2f)) // 弹性回弹更自然
-      .start()
-  }
-
-  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return super.onKeyDown(keyCode, event)
-  }
-
-  override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-    return super.onKeyUp(keyCode, event)
-  }
-
-  override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-    // 虚拟机上按按了 enter、空格键就只有 dispatchKeyEvent 可以响应？
-    return super.onKeyLongPress(keyCode, event)
-  }
-
-  private var isLongPress = false
-
-  /**
-   * 事件分发
-   */
-  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-    when (event.action) {
-      KeyEvent.ACTION_DOWN -> {
-        isLongPress = event.repeatCount > 4
-      }
-    }
-    // Timber.i("dispatchKeyEvent: ${event.keyCode}, ${event.action} ${event.repeatCount}")
-    if (event.action != KeyEvent.ACTION_UP) {
-      return super.dispatchKeyEvent(event)
-    }
-    when (val keyCode = event.keyCode) {
-      /**
-       * 上
-       */
-      KeyEvent.KEYCODE_DPAD_UP -> {
-        if (SPKeyConstants.REVERSE_DIRECTION.getRequired(false)) {
-          mainViewModel.down()
-        } else {
-          mainViewModel.up()
-        }
-        return true
-      }
-
-      /**
-       * 下
-       */
-      KeyEvent.KEYCODE_DPAD_DOWN -> {
-        if (SPKeyConstants.REVERSE_DIRECTION.getRequired(false)) {
-          mainViewModel.up()
-        } else {
-          mainViewModel.down()
-        }
-        return true
-      }
-
-      // ENTER、OK（确认）
-      KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-        if (isLongPress) {
-          mainViewModel.favoriteOrUnFavorite()
-          return true
-        }
-        if (SPKeyConstants.OK_CHANNEL.getRequired<Boolean>(true)) {
-          binding.btnMenu.callOnClick()
-        } else {
-          livePlayerFragment?.resumeOrPause()
-        }
-        return true
-      }
-
-      // 静音
-      KeyEvent.KEYCODE_MUTE -> {
-        try {
-          audioManager.setStreamVolume(
-            AudioManager.STREAM_SYSTEM,
-            0,
-            AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE
-          )
-        } catch (_: Exception) {
-        }
-        return true
-      }
-
-      KeyEvent.KEYCODE_DPAD_LEFT -> {
-        if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
-          volumeDown()
-        } else {
-          val source = mainViewModel.left()
-          if (source == null) {
-            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
-            return true
-          }
-          Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
-          return true
-        }
-      }
-
-      //  volume down、left
-      KeyEvent.KEYCODE_VOLUME_DOWN -> {
-        volumeDown()
-        return true
-      }
-
-      KeyEvent.KEYCODE_DPAD_RIGHT -> {
-        if (SPKeyConstants.VOLUME_CONTROL_DIRECTION.getRequired<Boolean>(false)) {
-          volumeUp()
-        } else {
-          val source = mainViewModel.right()
-          if (source == null) {
-            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
-            return true
-          }
-          Toast.makeText(this, "已切换到: $source", Toast.LENGTH_SHORT).show()
-          return true
-        }
-      }
-
-      // volume up、right
-      KeyEvent.KEYCODE_VOLUME_UP -> {
-        volumeUp()
-        return true
-      }
-
-      // 返回
-      KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> {
-        handleBackPress()
-        return true
-      }
-
-      // #
-      // 重新加载
-      KeyEvent.KEYCODE_POUND -> {
-        livePlayerFragment?.refresh()
-        return true
-      }
-
-      // 主页
-      KeyEvent.KEYCODE_HOME -> {
-        exitProcess(0)
-      }
-
-      // 菜单
-      KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_P -> {
-        val now = System.currentTimeMillis()
-
-        if (now - lastMenuClickTime < 500) {
-          handler.removeCallbacks(menuClickRunnable)
-          val channelName = mainViewModel.right()
-          if (channelName != null) {
-            Toast.makeText(this, "已切换到: $channelName", Toast.LENGTH_SHORT).show()
-          } else {
-            Toast.makeText(this, "当前频道只有一个源", Toast.LENGTH_SHORT).show()
-          }
-        } else {
-          handler.postDelayed(menuClickRunnable, 500)
-          lastMenuClickTime = now
-        }
-        return true
-      }
-
-      // 0
-      // 数字
-      KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3,
-      KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_7,
-      KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_9,
-      KeyEvent.KEYCODE_NUMPAD_0, KeyEvent.KEYCODE_NUMPAD_1, KeyEvent.KEYCODE_NUMPAD_2,
-      KeyEvent.KEYCODE_NUMPAD_3, KeyEvent.KEYCODE_NUMPAD_4, KeyEvent.KEYCODE_NUMPAD_5,
-      KeyEvent.KEYCODE_NUMPAD_6, KeyEvent.KEYCODE_NUMPAD_7, KeyEvent.KEYCODE_NUMPAD_8,
-      KeyEvent.KEYCODE_NUMPAD_9 -> {
-        val num = getNumForKeyCode(keyCode)
-
-        Log.i(TAG, "input number: $num")
-
-        mainViewModel.appendNumber(num)
-        return true
-      }
-    }
-    return super.dispatchKeyEvent(event)
-  }
-
-  private fun getNumForKeyCode(keyCode: Int): String {
-    return when (keyCode) {
-      KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_NUMPAD_0 -> "0"
-      KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_NUMPAD_1 -> "1"
-      KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_NUMPAD_2 -> "2"
-      KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_NUMPAD_3 -> "3"
-      KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_NUMPAD_4 -> "4"
-      KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_NUMPAD_5 -> "5"
-      KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_NUMPAD_6 -> "6"
-      KeyEvent.KEYCODE_7, KeyEvent.KEYCODE_NUMPAD_7 -> "7"
-      KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_NUMPAD_8 -> "8"
-      KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_NUMPAD_9 -> "9"
-      else -> ""
-    }
   }
 
   /**
@@ -725,7 +430,7 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
    *
    * @return true 表示已处理返回键 false 表示未处理返回键
    */
-  private fun handleBackPress(): Boolean {
+  override fun handleBackPress(): Boolean {
     if (mainViewModel.showCurrentChannel.value) {
       // 如果显示了当前频道
       mainViewModel.showCurrentChannel(false)
@@ -759,9 +464,11 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     handler.removeCallbacksAndMessages(null)
   }
 
+  /**
+   * 网络状态广播接收器
+   */
   private inner class NetworkBoardReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-      Log.i(TAG, "network change")
       val currentNetworkConnected = NetworkUtils.isConnected()
       if (currentNetworkConnected && !isNetworkConnected) {
         refreshFragment()
@@ -773,29 +480,64 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
     }
   }
 
-  private fun volumeDown() {
-    try {
-      audioManager.adjustStreamVolume(
-        AudioManager.STREAM_MUSIC,
-        AudioManager.ADJUST_LOWER,
-        AudioManager.FLAG_SHOW_UI
-      )
-    } catch (_: Exception) {
+  /**
+   * 检查网络连接状态
+   */
+  private fun checkNetworkConnection() {
+    lifecycleScope.launch {
+      var count = 1
+      while (true) {
+        delay(count * 1000L)
+        if (count < 10) {
+          count++
+        }
+        // 10秒轮询检测网络连接
+        val connected = NetworkUtils.isAvailableByPing()
+        if (connected && !isNetworkConnected) {
+          refreshFragment()
+        }
+        isNetworkConnected = connected
+      }
     }
   }
 
-  private fun volumeUp() {
-    val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-    if (volume < audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) {
-      try {
-        audioManager.adjustStreamVolume(
-          AudioManager.STREAM_MUSIC,
-          AudioManager.ADJUST_RAISE,
-          AudioManager.FLAG_SHOW_UI
-        )
-      } catch (e: Exception) {
-        Log.e(TAG, e.message.toString())
-      }
+  /**
+   * 初始化窗口
+   */
+  private fun initWindow() {
+    // 保持屏幕常亮
+    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+    // 隐藏系统栏
+    insetsController.systemBarsBehavior =
+      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    insetsController.hide(WindowInsetsCompat.Type.systemBars())
+
+    // 强制显示鼠标指针，解决电视上插入鼠标后不显示的问题
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      window.decorView.requestPointerCapture()
+    }
+  }
+
+  /**
+   * 注册网络状态广播接收器
+   */
+  @Suppress("DEPRECATION")
+  private fun registerNetworkReceiver() {
+    val filter = IntentFilter().apply {
+      addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+    }
+    registerReceiver(networkReceiver, filter)
+  }
+
+  /**
+   * 注销网络状态广播接收器
+   */
+  private fun unregisterNetworkReceiver() {
+    try {
+      unregisterReceiver(networkReceiver)
+    } catch (_: IllegalArgumentException) {
+      //接器未注册时会抛出异常，忽略
     }
   }
 
@@ -812,9 +554,8 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         setReferenceCounted(false)
         acquire(10 * 60 * 60 * 1000L) // 10 小时
       }
-      Log.i(TAG, "WakeLock acquired")
     } catch (e: Exception) {
-      Log.e(TAG, "Failed to acquire WakeLock", e)
+      Timber.e(e)
     }
   }
 
@@ -826,12 +567,11 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
       wakeLock?.let {
         if (it.isHeld) {
           it.release()
-          Log.i(TAG, "WakeLock released")
         }
       }
       wakeLock = null
     } catch (e: Exception) {
-      Log.e(TAG, "Failed to release WakeLock", e)
+      Timber.e(e)
     }
   }
 
@@ -848,9 +588,8 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
         setReferenceCounted(false)
         acquire()
       }
-      Log.i(TAG, "WifiLock acquired")
     } catch (e: Exception) {
-      Log.e(TAG, "Failed to acquire WifiLock", e)
+      Timber.e(e)
     }
   }
 
@@ -862,12 +601,11 @@ class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main)
       wifiLock?.let {
         if (it.isHeld) {
           it.release()
-          Log.i(TAG, "WifiLock released")
         }
       }
       wifiLock = null
     } catch (e: Exception) {
-      Log.e(TAG, "Failed to release WifiLock", e)
+      Timber.e(e)
     }
   }
 }

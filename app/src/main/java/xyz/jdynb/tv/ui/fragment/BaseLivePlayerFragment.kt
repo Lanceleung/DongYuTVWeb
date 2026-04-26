@@ -34,7 +34,7 @@ open class BaseLivePlayerFragment : LivePlayerFragment() {
     /**
      * 加载超时时间
      */
-    private const val LOAD_TIMEOUT_TIME = 8 * 1000L
+    private const val LOAD_TIMEOUT_TIME = 10 * 1000L
 
   }
 
@@ -90,9 +90,9 @@ open class BaseLivePlayerFragment : LivePlayerFragment() {
   }
 
   override fun play(channel: LiveChannelModel) {
+    setProgress()
     // 默认的播放
     execJs(JsType.PLAY, *channel.toArray())
-    setProgress()
     startLoadTimeout()
   }
 
@@ -110,17 +110,13 @@ open class BaseLivePlayerFragment : LivePlayerFragment() {
     return false
   }
 
-  override fun onProgressChanged(newProgress: Int): Int {
-    return if (newProgress < 100) newProgress else 99
-  }
-
   override fun onPageStarted(url: String, channelModel: LiveChannelModel) {
-
   }
 
   override fun onPageFinished(url: String, channelModel: LiveChannelModel) {
-    execJs(JsType.INIT, *channelModel.toArray())
-    startLoadTimeout()
+    execJs(JsType.INIT, *channelModel.toArray()) {
+      startLoadTimeout()
+    }
   }
 
   /**

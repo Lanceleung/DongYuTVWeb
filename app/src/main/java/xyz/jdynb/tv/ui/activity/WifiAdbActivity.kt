@@ -266,7 +266,7 @@ class WifiAdbActivity : EngineToolbarActivity<ActivityWifiAdbBinding>(R.layout.a
               "设置默认桌面",
               "取消设置默认桌面",
               "禁用软件安装程序",
-              "启用软件安装程序"
+              "启用软件安装程序",
             )
           ) { dialog, which ->
             when (which) {

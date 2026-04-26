@@ -102,6 +102,9 @@ class MainViewModel : ViewModel() {
    */
   val numberStringBuilder = StringBuilder()
 
+  /**
+   * 是否启用防抖
+   */
   var enableDebounce = true
 
   @OptIn(ExperimentalSerializationApi::class)
@@ -184,9 +187,11 @@ class MainViewModel : ViewModel() {
    * 初始化数据
    */
   private suspend fun init() = withContext(Dispatchers.IO) {
+    val liveConfigUrl = SPKeyConstants.CHANNEL_CONFIG_URL.getRequired<String>(LIVE_CONFIG_URL)
+      .ifBlank { LIVE_CONFIG_URL }
     // 读取网络上的配置文件
     val liveContent =
-      NetworkUtils.getResponseBodyCache(LIVE_CONFIG_URL, "lives/live-2026-03-19.jsonc")
+      NetworkUtils.getResponseBodyCache(liveConfigUrl, "lives/live-2026-03-19.jsonc")
     // Log.i(TAG, "liveContent: $liveContent")
     // 反序列化赋值给 liveModel 对象
     _liveModel = json.decodeFromString<LiveModel>(liveContent)
@@ -227,7 +232,6 @@ class MainViewModel : ViewModel() {
         child.number = it.number
       }
     }
-
     //distinctBy { it.number }.sortedBy { it.number } // 去重，并且升序排序
   }
 
@@ -480,6 +484,9 @@ class MainViewModel : ViewModel() {
     }
   }
 
+  /**
+   * 取消收藏指定频道
+   */
   suspend fun handleUnFavorite(channelModel: LiveChannelModel) {
     withContext(Dispatchers.IO) {
       LitePal.deleteAll<LiveChannelModel>(
@@ -501,10 +508,16 @@ class MainViewModel : ViewModel() {
     }
   }
 
+  /**
+   * 清空收藏频道列表
+   */
   fun clearFavoriteChannelList() {
     _favoriteChannelModelList.value = null
   }
 
+  /**
+   * 获取收藏频道列表
+   */
   fun getFavoriteChannelList() {
     viewModelScope.launch {
       _favoriteChannelModelList.value = withContext(Dispatchers.IO) {

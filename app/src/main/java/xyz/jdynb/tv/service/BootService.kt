@@ -55,7 +55,7 @@ class BootService: Service() {
     val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
     try {
       windowManager.addView(TextView(this).apply {
-        text = "冬雨TV"
+        text = " "
         textSize = 13f
         setTextColor(Color.WHITE)
       }, WindowManager.LayoutParams().apply {
@@ -69,8 +69,8 @@ class BootService: Service() {
         gravity = Gravity.START or Gravity.TOP
         format = PixelFormat.TRANSLUCENT
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        width = WindowManager.LayoutParams.WRAP_CONTENT
-        height = WindowManager.LayoutParams.WRAP_CONTENT
+        width = 1
+        height = 1
       })
     } catch (e: Exception) {
       Log.e(TAG, "Failed to add overlay", e)

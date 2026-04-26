@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:inputType="textUri"
+            android:padding="10dp"
+            android:id="@+id/edit_url"
+            android:focusable="true"
+            android:hint="请输入配置地址"
+            android:background="@drawable/bg_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:textSize="19sp"
+            android:id="@+id/btn_save"
+            android:layout_marginTop="10dp"
+            android:text="保存"
+            android:background="@drawable/bg_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:textSize="19sp"
+            android:id="@+id/btn_reset"
+            android:layout_marginTop="10dp"
+            android:text="恢复默认"
+            android:background="@drawable/bg_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/holo_red_light"
+            android:text="请在手机端打开此页面进行设置"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</layout>

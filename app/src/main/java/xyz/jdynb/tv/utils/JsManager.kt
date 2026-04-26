@@ -4,6 +4,7 @@ import android.util.Log
 import android.webkit.WebView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import xyz.jdynb.tv.BuildConfig
 import xyz.jdynb.tv.DongYuTVApplication
@@ -81,10 +82,10 @@ object JsManager {
       .readBytes().toString(Charsets.UTF_8)
   }
 
-  private suspend fun getOrWriteJs(url: String, name: String, type: JsType): String? {
+  private suspend fun getOrWriteJs(url: String, name: String, type: JsType): String {
     return NetworkUtils.getResponseBody(url)?.also { content ->
       writeJsToLocal(name, type, content)
-    } ?: getJsFromLocal(name, type)
+    } ?: getJsFromLocal(name, type) ?: getJsFromAsset(name, type)
   }
 
   /**
@@ -114,17 +115,15 @@ object JsManager {
             async {
               getOrWriteJs(it, playerConfig.id, type)
             }
-          }.map {
-            it.await()
-          }
+          }.awaitAll()
         } else {
-          scripts.mapNotNull {
+          scripts.map {
             getOrWriteJs(it, playerConfig.id, type)
           }
         }
       } catch (e: Exception) {
         Log.e("JsManager", e.message, e)
-        null
+        listOf(getJsFromAsset(playerConfig.id, type))
       }
     } as List<String>?
 

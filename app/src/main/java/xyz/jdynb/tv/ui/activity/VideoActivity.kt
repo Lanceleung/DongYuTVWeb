@@ -312,11 +312,25 @@ class VideoActivity : EngineActivity<ActivityVideoBinding>(R.layout.activity_vid
               it.delete()
             }
         }
-        currentVideoProgressFile = File(
-          videoProgressFile, EncryptUtil.encryptMD5ToString(
-            movieModel.url?.ifEmpty { movieModel.id } ?: movieModel.id))
+        val md5 = EncryptUtil.encryptMD5ToString(
+          movieModel.url?.ifEmpty { movieModel.id } ?: movieModel.id)
+        currentVideoProgressFile = File(videoProgressFile, EncryptUtil.encryptMD5ToString(md5))
         if (!currentVideoProgressFile.exists()) {
           currentVideoProgressFile.createNewFile()
+          val historyFile = File(cacheDir, "play_history")
+          if (!historyFile.exists()) {
+            historyFile.mkdirs()
+          }
+          val files = historyFile.listFiles() ?: arrayOf()
+          if (files.size > 100) {
+            files.sortedBy { it.lastModified() }
+              .take(files.size - 100)
+              .forEach {
+                it.delete()
+              }
+          }
+          val movieModelFile = File(historyFile, movieModel.title)
+          movieModelFile.writeText(NetworkUtils.json.encodeToString(movieModel))
         } else {
           val videoProgressContent = currentVideoProgressFile.readText()
           if (videoProgressContent.isNotEmpty()) {

@@ -45,6 +45,11 @@ class FullSettingDialog(context: Context): EngineDialog<DialogSettingFullBinding
       Toast.makeText(context, "下次启动时生效", Toast.LENGTH_SHORT).show()
     }
     binding.swVolumeDirection.initSwitch(SPKeyConstants.VOLUME_CONTROL_DIRECTION, false)
+
+    binding.btnCustomChannel.setOnClickListener {
+      CustomChannelDialog(context).show()
+      dismiss()
+    }
   }
 
   private fun SwitchCompat.initSwitch(key: String, default: Boolean, listener: ((Boolean) -> Unit)? = null) {

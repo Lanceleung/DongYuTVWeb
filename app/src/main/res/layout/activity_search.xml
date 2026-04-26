@@ -79,22 +79,42 @@
 
         </ScrollView>
 
-        <com.drake.statelayout.StateLayout
-            android:id="@+id/state"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv"
+            <Button
+                android:id="@+id/btn_history"
+                hit="@{true}"
+                android:layout_margin="6dp"
+                android:textSize="19sp"
+                android:background="@drawable/bg_select"
+                android:text="播放历史"
+                android:focusable="true"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="10dp"
-                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                app:spanCount="2" />
+                android:layout_height="wrap_content"/>
 
-        </com.drake.statelayout.StateLayout>
+            <com.drake.statelayout.StateLayout
+                android:id="@+id/state"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="0dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                    app:spanCount="2" />
+
+            </com.drake.statelayout.StateLayout>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

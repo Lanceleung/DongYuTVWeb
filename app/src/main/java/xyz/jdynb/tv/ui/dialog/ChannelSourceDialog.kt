@@ -38,12 +38,13 @@ class ChannelSourceDialog(
   override fun initData() {
     Log.i("ChannelSourceDialog", "initData: $currentChannelModel")
 
-    val playTimeoutDuration = SPKeyConstants.PLAY_TIMEOUT_DURATION.getRequired<Long>(8000L)
+    val playTimeoutDuration = SPKeyConstants.PLAY_TIMEOUT_DURATION.getRequired<Long>(0L)
     when (playTimeoutDuration) {
       0L -> binding.btnCloseAuto.isSelected = true
       5000L -> binding.btnTime1.isSelected = true
       8000L -> binding.btnTime2.isSelected = true
       10000L -> binding.btnTime3.isSelected = true
+      15000L -> binding.btnTime4.isSelected = true
     }
   }
 
@@ -99,6 +100,10 @@ class ChannelSourceDialog(
 
     binding.btnTime3.setOnClickListener {
       it.setTimeoutDuration(10000)
+    }
+
+    binding.btnTime4.setOnClickListener {
+      it.setTimeoutDuration(15000)
     }
   }
 

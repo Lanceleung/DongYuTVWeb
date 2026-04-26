@@ -118,6 +118,7 @@
             <intent-filter android:priority="9999">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" /> <!-- HTC 设备 -->
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
